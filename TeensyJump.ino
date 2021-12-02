@@ -114,23 +114,27 @@ class Bullet {
   public:
     float bulletSize= 2;
     bool onInit= true;
-    float initPos = 0;
+    float initPosX = 0;
+    float initPosY = 0;
     int initTime = 0;
     int id = random();
-    
+    int position = 0;
+
+
     void _start(){
-      if(onInit){
-        initTime = delta;
-        onInit= false; 
-        Serial.println("INIT");
-      }
+      initTime = delta;
+      initPosX = (player.playerX-(player.playerWidth/2))+3;
+      initPosY = player.playerYPadding+player.snoutLength+player.snoutRadius;
     }
+
     void _update(){
-      initPos = (player.playerX-(player.playerWidth/2))+3;
-      display.drawCircle(1+delta-initTime, initPos, bulletSize, SSD1306_WHITE);
+      
+      display.drawCircle(initPosY + (delta-initTime), initPosX, bulletSize, SSD1306_WHITE);
       display.display();
-      Serial.println("UPDATE BULLET");
-      Serial.println(convert_int16_to_str(delta-initTime));
+      Serial.print("initPosX");
+      Serial.println(convert_int16_to_str(initPosX));
+      Serial.print("initPosY");
+      Serial.println(convert_int16_to_str(initPosX));
     }
 };
 class BulletSpawner {

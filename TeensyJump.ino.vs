@@ -38,16 +38,37 @@ int val = 0;
 int i = 0;
 int address_sensor1= 18; //binary equivalent is 1001000
 int address_sensor2= 17; //binary equivalent is 1001001
-int buttonPressed = 0;
 
 
-bool gameOver = false;
 int delta = 0;
 float x = 0;
+class GameState(){
+  public:
+    bool gameover = false;
+  
+  void Restart(){
+
+  }
+  void GameOver(){
+    
+  }
+
+};
+GameState gamestate;
+class InputManager{
+  public:
+  int buttonPressRaw = 0;
+  bool buttonPressed = false;
+  void _update(){
+    buttonPressRaw = analogRead(inputpin);
+    buttonPressed = buttonPressRaw < 50;
+  }
+};
+InputManager inputManager;
 
 class Player{
   public:
-    float playerX= 28;
+    float playerX= 31;
     float playerWidth = 8;
     float playerHeight = 5;
     float playerYPadding = 10;
@@ -102,9 +123,12 @@ class Player{
       playerX = display.height()+1;
       }
     }
-  
+    void handleInput(){
+      player.isAttacking = inputManager.buttonPressed;
+    }
     void _update()
   {
+    handleInput();
     playerMovement();
     renderPlayer(); 
   }
@@ -114,23 +138,27 @@ class Bullet {
   public:
     float bulletSize= 2;
     bool onInit= true;
-    float initPos = 0;
+    float initPosX = 0;
+    float initPosY = 0;
     int initTime = 0;
     int id = random();
-    
+    int position = 0;
+
+
     void _start(){
-      if(onInit){
-        initTime = delta;
-        onInit= false; 
-        Serial.println("INIT");
-      }
+      initTime = delta;
+      initPosX = (player.playerX-(player.playerWidth/2))+3;
+      initPosY = player.playerYPadding+player.snoutLength+player.snoutRadius;
     }
+
     void _update(){
-      initPos = (player.playerX-(player.playerWidth/2))+3;
-      display.drawCircle(1+delta-initTime, initPos, bulletSize, SSD1306_WHITE);
+      
+      display.drawCircle(initPosY + (delta-initTime), initPosX, bulletSize, SSD1306_WHITE);
       display.display();
-      Serial.println("UPDATE BULLET");
-      Serial.println(convert_int16_to_str(delta-initTime));
+      Serial.print("initPosX");
+      Serial.println(convert_int16_to_str(initPosX));
+      Serial.print("initPosY");
+      Serial.println(convert_int16_to_str(initPosX));
     }
 };
 class BulletSpawner {
@@ -192,16 +220,13 @@ void setup() {
 }
 
 void UPDATE(){
+  inputManager._update();
   player._update();
   delta++;
-  buttonPressed = analogRead(inputpin);
-  player.isAttacking = buttonPressed < 50;
   printToScreen(convert_int16_to_str(x), 1);
-
   if(player.isAttacking){
     bulletSpawner.Instantiate();
   }
-
 }
 void loop() {
   //gyro setup
@@ -218,8 +243,13 @@ void loop() {
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
   // Get Gyro y
   x = gyro_y;
-  x = map(x, -32768,32768, -100, 101);
+  x = map(x, -32768,32768, -50, 51);
   display.clearDisplay();
+  if(gameState.gameOver){
+    
+    printToScreen("Game Over", 2);
+    return;
+  }
   //Serial.print(convert_int16_to_str(x));
   UPDATE();
   display.display();
