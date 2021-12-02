@@ -94,7 +94,7 @@ class Player{
     }
  
     void playerMovement(){
-      playerX += x;
+      playerX += (int16_t)(x);
     if(playerX>display.height()+1){
       playerX = 0;
     }
@@ -102,6 +102,7 @@ class Player{
     playerX = display.height()+1;
     }
     }
+  
   void _update()
   {
     playerMovement();
