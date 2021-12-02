@@ -59,6 +59,18 @@ class InputManager{
   public:
   int buttonPressRaw = 0;
   bool buttonPressed = false;
+  bool getKeyToggle = true;
+  bool getKeyDown(){
+    if(!buttonPressed){
+      getKeyToggle = true;
+    }
+    if(getKeyToggle && buttonPressed){
+      getKeyToggle = false;
+      return true;
+    }
+    
+    return false;
+  }
   void _update(){
     buttonPressRaw = analogRead(inputpin);
     buttonPressed = buttonPressRaw < 50;
@@ -124,7 +136,7 @@ class Player{
       }
     }
     void handleInput(){
-      isAttacking = inputManager.buttonPressed;
+      isAttacking = inputManager.getKeyDown();
     }
     void _update()
   {
@@ -154,10 +166,10 @@ class Bullet {
     void _update(){
       
       display.drawCircle(initPosY++, initPosX, bulletSize, SSD1306_WHITE);
-      Serial.print("initPosX");
-      Serial.println(convert_int16_to_str(initPosX));
-      Serial.print("initPosY");
-      Serial.println(convert_int16_to_str(initPosX));
+    //  Serial.print("initPosX");
+    //  Serial.println(convert_int16_to_str(initPosX));
+    //  Serial.print("initPosY"); 
+        Serial.println(convert_int16_to_str(id));
     }
 };
 class BulletSpawner {
@@ -174,6 +186,7 @@ class BulletSpawner {
     void _start(){
       for(int i = 0; i<16 ;i++){
         Bullet b;
+        b.id = i;
         bulletPool[i] = b;
       }
     }
@@ -232,7 +245,7 @@ void UPDATE(){
   inputManager._update();
   player._update();
   bulletSpawner._update();
-  bulletSpawner.currentBullet._update();
+  //bulletSpawner.currentBullet._update();
   delta++;
   printToScreen(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
   if(player.isAttacking){
