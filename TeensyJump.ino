@@ -67,17 +67,8 @@ class Player{
     float snoutPadding = 14;
     bool isAttacking = false;
 
-  void _update()
-  {
-    playerX += x;
-    if(playerX>display.height()+1){
-      playerX = 0;
-    }
-      if(playerX<0){
-    playerX = display.height()+1;
-    }
-
-    display.fillRect(playerHeight+playerYPadding, (playerX-(playerWidth/2))-1, playerHeight,playerWidth, SSD1306_INVERSE);
+    void renderPlayer() {
+       display.fillRect(playerHeight+playerYPadding, (playerX-(playerWidth/2))-1, playerHeight,playerWidth, SSD1306_INVERSE);
     // Draw Head
     display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 4, SSD1306_WHITE);
     display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 3, SSD1306_WHITE);
@@ -100,6 +91,21 @@ class Player{
       display.drawLine(playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX, playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength, SSD1306_WHITE);
       display.drawCircle( playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength,snoutRadius, SSD1306_WHITE);
     }
+    }
+ 
+    void playerMovement(){
+      playerX += x;
+    if(playerX>display.height()+1){
+      playerX = 0;
+    }
+      if(playerX<0){
+    playerX = display.height()+1;
+    }
+    }
+  void _update()
+  {
+    playerMovement();
+    renderPlayer(); 
   }
 };
 Player player;
