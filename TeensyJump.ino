@@ -11,11 +11,10 @@
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 #define NUMFLAKES     10 // Number of snowflakes in the animation example
-
 #define LOGO_HEIGHT   16
 #define LOGO_WIDTH    16
+
 char tmp_str[20]; // temporary variable used in convert function
 
 char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, resulting strings will have the same length in the debug monitor.
@@ -28,14 +27,23 @@ void printToScreen(char* string, int size){
   display.setCursor(0, 0);
   display.println(string);
 }
+static const unsigned char PROGMEM logo_bmp[] = { };
+const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
+int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
+int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
+int16_t temperature; // variables for temperature data
+int inputpin = 20;
+bool asd= false;
+int val = 0;
+int i = 0;
+int address_sensor1= 18; //binary equivalent is 1001000
+int address_sensor2= 17; //binary equivalent is 1001001
+int buttonPressed = 0;
+
+
+bool gameOver = false;
 int delta = 0;
 float x = 0;
-
-
-
-
-
-
 
 class Player{
   public:
@@ -147,30 +155,11 @@ class Plattform{
       
     }
 };
-//Bullet b;
-
-
-
-
-bool gameOver = false;
-static const unsigned char PROGMEM logo_bmp[] =
-{ };
-const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
-int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
-int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
-int16_t temperature; // variables for temperature data
-int inputpin = 20;
-bool asd= false;
-int val = 0;
-int i = 0;
-int address_sensor1= 18; //binary equivalent is 1001000
-int address_sensor2= 17; //binary equivalent is 1001001
-int buttonPressed = 0;
-
 
 void START(){
   bulletSpawner._start();
 }
+
 void setup() { 
   Serial.begin(9600); 
   if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
@@ -201,6 +190,11 @@ void UPDATE(){
   buttonPressed = analogRead(inputpin);
   player.isAttacking = buttonPressed < 50;
   printToScreen(convert_int16_to_str(x), 1);
+
+  if(player.isAttacking){
+    bulletSpawner.Instantiate();
+  }
+
 }
 void loop() {
   //gyro setup
