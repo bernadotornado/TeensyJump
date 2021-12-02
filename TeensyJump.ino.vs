@@ -47,7 +47,7 @@ float x = 0;
 
 class Player{
   public:
-    float playerX= 0;
+    float playerX= 28;
     float playerWidth = 8;
     float playerHeight = 5;
     float playerYPadding = 10;

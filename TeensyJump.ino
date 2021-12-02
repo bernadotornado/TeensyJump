@@ -47,7 +47,7 @@ float x = 0;
 
 class Player{
   public:
-    float playerX= 0;
+    float playerX= 31;
     float playerWidth = 8;
     float playerHeight = 5;
     float playerYPadding = 10;
@@ -218,7 +218,7 @@ void loop() {
   gyro_z = Wire.read()<<8 | Wire.read(); // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
   // Get Gyro y
   x = gyro_y;
-  x = map(x, -32768,32768, -100, 101);
+  x = map(x, -32768,32768, -50, 51);
   display.clearDisplay();
   //Serial.print(convert_int16_to_str(x));
   UPDATE();
