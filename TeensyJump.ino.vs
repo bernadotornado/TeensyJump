@@ -69,23 +69,23 @@ InputManager inputManager;
 class Player{
   public:
     float playerX= 31;
-    float playerWidth = 8;
-    float playerHeight = 5;
-    float playerYPadding = 10;
-    float playerHeadpos = 9;
-    float leg1Pos = 4;
-    float leg2Pos = 1;
-    float leg3Pos = -2;
-    float playerBoundingBoxMinX= 0;
-    float playerBoundingBoxMinY= 0;
-    float playerBoundingBoxMaxX= 0;
-    float playerBoundingBoxMaxY= 0;
-    float footLength = 1;
-    float snoutPosY = 8;
-    float snoutPosX = 2;
-    float snoutLength = 3;
-    float snoutRadius =1 ;
-    float snoutPadding = 14;
+    const int playerWidth = 8;
+    const int playerHeight = 5;
+    const int playerYPadding = 10;
+    const int playerHeadpos = 9;
+    const int leg1Pos = 4;
+    const int leg2Pos = 1;
+    const int leg3Pos = -2;
+    const int playerBoundingBoxMinX= 0;
+    const int playerBoundingBoxMinY= 0;
+    const int playerBoundingBoxMaxX= 0;
+    const int playerBoundingBoxMaxY= 0;
+    const int footLength = 1;
+    const int snoutPosY = 8;
+    const int snoutPosX = 2;
+    const int snoutLength = 3;
+    const int snoutRadius =1 ;
+    const int snoutPadding = 14;
     bool isAttacking = false;
 
     void renderPlayer() {
@@ -139,7 +139,7 @@ class Bullet {
     float bulletSize= 2;
     bool onInit= true;
     float initPosX = 0;
-    float initPosY = 0;
+    float initPosY = 128;
     int initTime = 0;
     int id = random();
     int position = 0;
@@ -153,8 +153,7 @@ class Bullet {
 
     void _update(){
       
-      display.drawCircle(initPosY + (delta-initTime), initPosX, bulletSize, SSD1306_WHITE);
-      display.display();
+      display.drawCircle(initPosY++, initPosX, bulletSize, SSD1306_WHITE);
       Serial.print("initPosX");
       Serial.println(convert_int16_to_str(initPosX));
       Serial.print("initPosY");
@@ -163,22 +162,32 @@ class Bullet {
 };
 class BulletSpawner {
   public:
-  int currentBulletIndex = 0;
-  Bullet bulletPool[16];
-  Bullet Instantiate(){
-      if(currentBulletIndex >15){
-        currentBulletIndex = 0;
-      }
-      return bulletPool[currentBulletIndex++];
-  }
-  void _start(){
-    for(int i = 0; i<16 ;i++){
-      Bullet b;
-      b._start();
-      bulletPool[i] = b;
-      
+    int currentBulletIndex = 0;
+    Bullet bulletPool[16];
+    Bullet currentBullet;
+    Bullet getFromPool(){
+        if(currentBulletIndex >15){
+          currentBulletIndex = 0;
+        }
+        return bulletPool[currentBulletIndex++];
     }
-  }
+    void _start(){
+      for(int i = 0; i<16 ;i++){
+        Bullet b;
+        bulletPool[i] = b;
+      }
+    }
+    void _update(){
+      for(int i = 0; i<16 ;i++){
+        
+        bulletPool[i]._update();
+      }
+      if(player.isAttacking){
+         currentBullet = getFromPool();
+         currentBullet._start();
+         
+      }
+    }
 };
 BulletSpawner bulletSpawner;
 class Plattform{
@@ -222,10 +231,12 @@ void setup() {
 void UPDATE(){
   inputManager._update();
   player._update();
+  bulletSpawner._update();
+  bulletSpawner.currentBullet._update();
   delta++;
-  printToScreen(convert_int16_to_str(x), 1);
+  printToScreen(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
   if(player.isAttacking){
-    bulletSpawner.Instantiate();
+    bulletSpawner.getFromPool();
   }
 }
 void loop() {
