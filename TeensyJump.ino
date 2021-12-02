@@ -16,32 +16,85 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define LOGO_HEIGHT   16
 #define LOGO_WIDTH    16
-char tmp_str[7]; // temporary variable used in convert function
+char tmp_str[20]; // temporary variable used in convert function
 
 char* convert_int16_to_str(int16_t i) { // converts int16 to string. Moreover, resulting strings will have the same length in the debug monitor.
   sprintf(tmp_str, "%6d", i);
   return tmp_str;
 }
+void printToScreen(char* string, int size){
+  display.setTextSize(size); // Draw 2X-scale text
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0, 0);
+  display.println(string);
+}
 int delta = 0;
-float playerX= 0;
-float playerWidth = 8;
-float playerHeight = 5;
-float playerYPadding = 5;
-float playerHeadpos = 9;
-float leg1Pos = 4;
-float leg2Pos = 1;
-float leg3Pos = -2;
-float playerBoundingBoxMinX= 0;
-float playerBoundingBoxMinY= 0;
-float playerBoundingBoxMaxX= 0;
-float playerBoundingBoxMaxY= 0;
-float footLength = 1;
-float snoutPosY = 8;
-float snoutPosX = 2;
-float snoutLength = 3;
-float snoutRadius =1 ;
-float snoutPadding = 14;
-bool isAttacking = false;
+float x = 0;
+
+
+
+
+
+
+
+class Player{
+  public:
+    float playerX= 0;
+    float playerWidth = 8;
+    float playerHeight = 5;
+    float playerYPadding = 10;
+    float playerHeadpos = 9;
+    float leg1Pos = 4;
+    float leg2Pos = 1;
+    float leg3Pos = -2;
+    float playerBoundingBoxMinX= 0;
+    float playerBoundingBoxMinY= 0;
+    float playerBoundingBoxMaxX= 0;
+    float playerBoundingBoxMaxY= 0;
+    float footLength = 1;
+    float snoutPosY = 8;
+    float snoutPosX = 2;
+    float snoutLength = 3;
+    float snoutRadius =1 ;
+    float snoutPadding = 14;
+    bool isAttacking = false;
+
+  void _update()
+  {
+    playerX += x;
+    if(playerX>display.height()+1){
+      playerX = 0;
+    }
+      if(playerX<0){
+    playerX = display.height()+1;
+    }
+
+    display.fillRect(playerHeight+playerYPadding, (playerX-(playerWidth/2))-1, playerHeight,playerWidth, SSD1306_INVERSE);
+    // Draw Head
+    display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 4, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 3, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 2, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 1, SSD1306_WHITE);
+    // Draw Legs
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg1Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg1Pos, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg2Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg2Pos, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg3Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg3Pos, SSD1306_WHITE);
+    // Draw feet
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg1Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg1Pos-footLength, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg2Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg2Pos-footLength, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg3Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg3Pos-footLength, SSD1306_WHITE);
+    // Draw Snout
+    if(isAttacking){
+      display.drawLine(playerYPadding+snoutPadding, (playerX-(playerWidth/2))+2, playerYPadding+snoutPadding+snoutLength, (playerX-(playerWidth/2))+2, SSD1306_WHITE);
+      display.drawCircle( playerYPadding+snoutPadding+snoutLength, (playerX-(playerWidth/2))+2,snoutRadius, SSD1306_WHITE);
+    }
+    else{ 
+      display.drawLine(playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX, playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength, SSD1306_WHITE);
+      display.drawCircle( playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength,snoutRadius, SSD1306_WHITE);
+    }
+  }
+};
+Player player;
 class Bullet {
   public:
     float bulletSize= 2;
@@ -49,113 +102,42 @@ class Bullet {
     float initPos = 0;
     int initTime = 0;
     int id = random();
-    void InstanceBullet(){
+    
+    void _start(){
       if(onInit){
-        
         initTime = delta;
         onInit= false; 
         Serial.println("INIT");
       }
     }
-    void UpdateBullet(){
-      initPos = (playerX-(playerWidth/2))+3;
+    void _update(){
+      initPos = (player.playerX-(player.playerWidth/2))+3;
       display.drawCircle(1+delta-initTime, initPos, bulletSize, SSD1306_WHITE);
       display.display();
       Serial.println("UPDATE BULLET");
       Serial.println(convert_int16_to_str(delta-initTime));
     }
 };
-Bullet b;
-
-
-bool gameOver = false;
-float x = 0;
-
-
-static const unsigned char PROGMEM logo_bmp[] =
-{ };
-
-const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
-int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
-int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
-int16_t temperature; // variables for temperature data
-
-
-
-
-
-int inputpin = 20;
-bool asd= false;
-int val = 0;
-void setup() { 
-    Serial.begin(9600); 
-    if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-    }
-    // pinMode(A4, INPUT);  
-  pinMode(inputpin, INPUT);
-  display.display();
-  delay(2000); 
-  display.clearDisplay();
-  display.drawPixel(10, 10, SSD1306_WHITE);
-  display.display();
-  delay(2000);
-   Wire.begin();
-  Wire.beginTransmission(MPU_ADDR); // Begins a transmission to the I2C slave (GY-521 board)
-  Wire.write(0x6B); // PWR_MGMT_1 register
-  Wire.write(0); // set to zero (wakes up the MPU-6050)
-  Wire.endTransmission(true);
-  b.InstanceBullet();
-}
-int i = 0;
-int address_sensor1= 18; //binary equivalent is 1001000
-int address_sensor2= 17; //binary equivalent is 1001001
-int buttonPressed = 0;
-
-
-void InstancePlayer()
-{
-  // Get Horizonzal Movement
-//  playerX = display.height() / 2 + x / 3.5f;
-    playerX += x;//display.height() / 2 + x / 3.5f;
-    if(playerX>display.height()+1){
-    playerX = 0;
-    }
-      if(playerX<0){
-    playerX = display.height()+1;
-    }
- //   Serial.print(convert_int16_to_str(playerX));
-  // PLAYER += UND DANN AUF DIE ANDERE SEITE!!!!
-  // FÜR MOVEMENT
-  
-  // Draw Body
-  display.fillRect(playerHeight+playerYPadding, (playerX-(playerWidth/2))-1, playerHeight,playerWidth, SSD1306_INVERSE);
-  // Draw Head
-  display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 4, SSD1306_WHITE);
-  display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 3, SSD1306_WHITE);
-  display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 2, SSD1306_WHITE);
-  display.drawCircle(playerHeadpos+playerYPadding, (playerX-(playerWidth/2))+2, 1, SSD1306_WHITE);
-  // Draw Legs
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg1Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg1Pos, SSD1306_WHITE);
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg2Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg2Pos, SSD1306_WHITE);
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+ leg3Pos, playerYPadding+4, (playerX-(playerWidth/2))+2 + leg3Pos, SSD1306_WHITE);
-  // Draw feet
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg1Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg1Pos-footLength, SSD1306_WHITE);
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg2Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg2Pos-footLength, SSD1306_WHITE);
-  display.drawLine(playerYPadding, (playerX-(playerWidth/2))+2+leg3Pos, playerYPadding, (playerX-(playerWidth/2))+2+leg3Pos-footLength, SSD1306_WHITE);
-  // Draw Snout
-  if(isAttacking){
-    display.drawLine(playerYPadding+snoutPadding, (playerX-(playerWidth/2))+2, playerYPadding+snoutPadding+snoutLength, (playerX-(playerWidth/2))+2, SSD1306_WHITE);
-    display.drawCircle( playerYPadding+snoutPadding+snoutLength, (playerX-(playerWidth/2))+2,snoutRadius, SSD1306_WHITE);
+class BulletSpawner {
+  public:
+  int currentBulletIndex = 0;
+  Bullet bulletPool[16];
+  Bullet Instantiate(){
+      if(currentBulletIndex >15){
+        currentBulletIndex = 0;
+      }
+      return bulletPool[currentBulletIndex++];
   }
-  else{ 
-    display.drawLine(playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX, playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength, SSD1306_WHITE);
-    display.drawCircle( playerYPadding+snoutPosY, (playerX-(playerWidth/2))-snoutPosX-snoutLength,snoutRadius, SSD1306_WHITE);
+  void _start(){
+    for(int i = 0; i<16 ;i++){
+      Bullet b;
+      b._start();
+      bulletPool[i] = b;
+      
+    }
   }
-}
-
-
+};
+BulletSpawner bulletSpawner;
 class Plattform{
   public:
     float plattformWidth = 10;
@@ -165,16 +147,60 @@ class Plattform{
       
     }
 };
+//Bullet b;
 
 
 
 
+bool gameOver = false;
+static const unsigned char PROGMEM logo_bmp[] =
+{ };
+const int MPU_ADDR = 0x68; // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
+int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
+int16_t gyro_x, gyro_y, gyro_z; // variables for gyro raw data
+int16_t temperature; // variables for temperature data
+int inputpin = 20;
+bool asd= false;
+int val = 0;
+int i = 0;
+int address_sensor1= 18; //binary equivalent is 1001000
+int address_sensor2= 17; //binary equivalent is 1001001
+int buttonPressed = 0;
 
-void printToScreen(char* string, int size){
-  display.setTextSize(size); // Draw 2X-scale text
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0, 0);
-  display.println(string);
+
+void START(){
+  bulletSpawner._start();
+}
+void setup() { 
+  Serial.begin(9600); 
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+  Serial.println(F("SSD1306 allocation failed"));
+  for(;;);
+  }
+  // pinMode(A4, INPUT);  
+  pinMode(inputpin, INPUT);
+  display.display();
+  delay(2000); 
+  display.clearDisplay();
+  display.drawPixel(10, 10, SSD1306_WHITE);
+  display.display();
+  delay(2000);
+  Wire.begin();
+  Wire.beginTransmission(MPU_ADDR); // Begins a transmission to the I2C slave (GY-521 board)
+  Wire.write(0x6B); // PWR_MGMT_1 register
+  Wire.write(0); // set to zero (wakes up the MPU-6050)
+  Wire.endTransmission(true);
+
+  START();
+
+}
+
+void UPDATE(){
+  player._update();
+  delta++;
+  buttonPressed = analogRead(inputpin);
+  player.isAttacking = buttonPressed < 50;
+  printToScreen(convert_int16_to_str(x), 1);
 }
 void loop() {
   //gyro setup
@@ -194,12 +220,7 @@ void loop() {
   x = map(x, -32768,32768, -100, 101);
   display.clearDisplay();
   //Serial.print(convert_int16_to_str(x));
-  InstancePlayer();
-  delta++;
-  buttonPressed = analogRead(inputpin);
-  isAttacking = buttonPressed < 50;
-  b.UpdateBullet();
-  printToScreen(convert_int16_to_str(x), 1);
+  UPDATE();
   display.display();
   delay(25);
 }
