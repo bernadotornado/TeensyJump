@@ -42,9 +42,9 @@ int address_sensor2= 17; //binary equivalent is 1001001
 
 int delta = 0;
 float x = 0;
-class GameState(){
+class GameState{
   public:
-    bool gameover = false;
+    bool gameOver = false;
   
   void Restart(){
 
@@ -54,7 +54,7 @@ class GameState(){
   }
 
 };
-GameState gamestate;
+GameState gameState;
 class InputManager{
   public:
   int buttonPressRaw = 0;
@@ -124,7 +124,7 @@ class Player{
       }
     }
     void handleInput(){
-      player.isAttacking = inputManager.buttonPressed;
+      isAttacking = inputManager.buttonPressed;
     }
     void _update()
   {

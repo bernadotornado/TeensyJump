@@ -38,12 +38,33 @@ int val = 0;
 int i = 0;
 int address_sensor1= 18; //binary equivalent is 1001000
 int address_sensor2= 17; //binary equivalent is 1001001
-int buttonPressed = 0;
 
 
-bool gameOver = false;
 int delta = 0;
 float x = 0;
+class GameState{
+  public:
+    bool gameOver = false;
+  
+  void Restart(){
+
+  }
+  void GameOver(){
+    
+  }
+
+};
+GameState gameState;
+class InputManager{
+  public:
+  int buttonPressRaw = 0;
+  bool buttonPressed = false;
+  void _update(){
+    buttonPressRaw = analogRead(inputpin);
+    buttonPressed = buttonPressRaw < 50;
+  }
+};
+InputManager inputManager;
 
 class Player{
   public:
@@ -102,9 +123,12 @@ class Player{
       playerX = display.height()+1;
       }
     }
-  
+    void handleInput(){
+      isAttacking = inputManager.buttonPressed;
+    }
     void _update()
   {
+    handleInput();
     playerMovement();
     renderPlayer(); 
   }
@@ -196,16 +220,13 @@ void setup() {
 }
 
 void UPDATE(){
+  inputManager._update();
   player._update();
   delta++;
-  buttonPressed = analogRead(inputpin);
-  player.isAttacking = buttonPressed < 50;
   printToScreen(convert_int16_to_str(x), 1);
-
   if(player.isAttacking){
     bulletSpawner.Instantiate();
   }
-
 }
 void loop() {
   //gyro setup
@@ -224,6 +245,11 @@ void loop() {
   x = gyro_y;
   x = map(x, -32768,32768, -50, 51);
   display.clearDisplay();
+  if(gameState.gameOver){
+    
+    printToScreen("Game Over", 2);
+    return;
+  }
   //Serial.print(convert_int16_to_str(x));
   UPDATE();
   display.display();
