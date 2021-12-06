@@ -201,14 +201,25 @@ public:
   int position = 0;
   int speed = 0;
   int translate = 0;
+  bool render = false;
+  bool fire = false;
 
   void _start() {
    // initTime = delta;
     speed = 1;
-    initPosX = (player.playerX - (player.playerWidth / 2)) + 3;
-    initPosY = player.playerYPadding + player.snoutLength + player.snoutRadius;
+    initPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
+    initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
     bulletPosX = initPosX;
     bulletPosY = initPosY;
+  }
+  void reset(){
+    speed = 0;
+    bulletPosY= initPosY;
+    bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
+    render = false;
+    fire = false;
+    translate = 0;
+
   }
   void hibernate(){
     speed = 0;
@@ -216,10 +227,12 @@ public:
     bulletPosY = 100;
   }
   void _update() {
-    bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
+    if(!fire)
+      bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
     translate+= speed;
-    bulletPosY = player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
-    display.drawCircle(bulletPosY+= speed, bulletPosX, bulletSize, SSD1306_WHITE);
+    bulletPosY = initPosY+translate;
+    if(render)
+      display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
   }
 };
 class Enemy {
@@ -348,7 +361,6 @@ void UPDATE()
 {
   inputManager._update();
   player._update();
-  
   bulletSpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
