@@ -5,6 +5,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_I2CDevice.h>
+#include "qmath.h"
 //#include "Test.hpp"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
@@ -30,6 +31,24 @@ void printStr(char *string, int size)
   display.setCursor(0, 0);
   display.println(string);
 }
+class v2
+{
+public:
+  int x;
+  int y;
+  v2(int _x, int _y){
+    x = _x;
+    y = _y;
+  }
+  float magnitude(){
+    return qmath.sqrt(x+y);
+  }
+  v2 subtract(v2 a, v2 b){
+    return v2(a.x-b.x, a.y-b.y);
+  }
+}
+
+
 static const unsigned char PROGMEM logo_bmp[] = {};
 const int MPU_ADDR = 0x68;                                 // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
 int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
@@ -106,7 +125,7 @@ public:
   const int playerBoundingBoxMinY = 0;
   const int playerBoundingBoxMaxX = 0;
   const int playerBoundingBoxMaxY = 0;
-  const int legLength = 4
+  const int legLength = 4;
   const int footLength = 1;
   const int snoutPosY = 8;
   const int snoutPosX = 2;
@@ -181,6 +200,7 @@ public:
   int id = random();
   int position = 0;
   int speed = 0;
+  int translate = 0;
 
   void _start() {
    // initTime = delta;
@@ -196,8 +216,9 @@ public:
     bulletPosY = 100;
   }
   void _update() {
-    bulletPosX = (player.playerX - (player.playerWidth / 2)) + 3;
-    bulletPosY = player.playerYPadding + player.snoutLength + player.snoutRadius+ player.;
+    bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
+    translate+= speed;
+    bulletPosY = player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
     display.drawCircle(bulletPosY+= speed, bulletPosX, bulletSize, SSD1306_WHITE);
   }
 };
@@ -207,16 +228,14 @@ class BulletSpawner
     int currentBulletIndex = 0;
     Bullet bulletPool[16];
     Bullet currentBullet;
-    Bullet getFromPool()
-    {
+    Bullet getFromPool() {
       if (currentBulletIndex > 15)
       {
         currentBulletIndex = 0;
       }
       return bulletPool[currentBulletIndex++];
     }
-    void _start()
-    {
+    void _start() {
       for (int i = 0; i < 16; i++)
       {
         Bullet b;
@@ -227,14 +246,18 @@ class BulletSpawner
       currentBullet = getFromPool();
     }
     void _update() {
-      for (int i = 0; i < 16; i++) {
-        bulletPool[i]._update();
-      }
-
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
+        Serial.println(convert_int16_to_str(currentBullet.id));
+        
         currentBullet._start();
+        Serial.println(convert_int16_to_str(currentBullet.speed));
+        
+        Serial.println(convert_int16_to_str(currentBullet.translate));
+      }
+      for (int i = 0; i < 16; i++) {
+        bulletPool[i]._update();
       }
     }
 };

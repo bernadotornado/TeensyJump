@@ -5,6 +5,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Adafruit_I2CDevice.h>
+#include "qmath.h"
 //#include "Test.hpp"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
@@ -106,6 +107,7 @@ public:
   const int playerBoundingBoxMinY = 0;
   const int playerBoundingBoxMaxX = 0;
   const int playerBoundingBoxMaxY = 0;
+  const int legLength = 4;
   const int footLength = 1;
   const int snoutPosY = 8;
   const int snoutPosX = 2;
@@ -123,9 +125,9 @@ public:
     display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 2, SSD1306_WHITE);
     display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 1, SSD1306_WHITE);
     // Draw Legs
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos, playerYPadding + 4, (playerX - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos, playerYPadding + 4, (playerX - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg3Pos, playerYPadding + 4, (playerX - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
+    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg3Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
     // Draw feet
     display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos, playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos - footLength, SSD1306_WHITE);
     display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos, playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos - footLength, SSD1306_WHITE);
@@ -180,6 +182,7 @@ public:
   int id = random();
   int position = 0;
   int speed = 0;
+  int translate = 0;
 
   void _start() {
    // initTime = delta;
@@ -195,8 +198,9 @@ public:
     bulletPosY = 100;
   }
   void _update() {
-    bulletPosX = (player.playerX - (player.playerWidth / 2)) + 3;
-    bulletPosY = player.playerYPadding + player.snoutLength + player.snoutRadius;
+    bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
+    translate+= speed;
+    bulletPosY = player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
     display.drawCircle(bulletPosY+= speed, bulletPosX, bulletSize, SSD1306_WHITE);
   }
 };
@@ -206,16 +210,14 @@ class BulletSpawner
     int currentBulletIndex = 0;
     Bullet bulletPool[16];
     Bullet currentBullet;
-    Bullet getFromPool()
-    {
+    Bullet getFromPool() {
       if (currentBulletIndex > 15)
       {
         currentBulletIndex = 0;
       }
       return bulletPool[currentBulletIndex++];
     }
-    void _start()
-    {
+    void _start() {
       for (int i = 0; i < 16; i++)
       {
         Bullet b;
@@ -226,14 +228,18 @@ class BulletSpawner
       currentBullet = getFromPool();
     }
     void _update() {
-      for (int i = 0; i < 16; i++) {
-        bulletPool[i]._update();
-      }
-
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
+        Serial.println(convert_int16_to_str(currentBullet.id));
+        
         currentBullet._start();
+        Serial.println(convert_int16_to_str(currentBullet.speed));
+        
+        Serial.println(convert_int16_to_str(currentBullet.translate));
+      }
+      for (int i = 0; i < 16; i++) {
+        bulletPool[i]._update();
       }
     }
 };
