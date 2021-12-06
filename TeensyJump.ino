@@ -348,17 +348,12 @@ void UPDATE()
 {
   inputManager._update();
   player._update();
-  
   bulletSpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
   printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
   //Test test;
   //test
-  if (player.isAttacking)
-  {
-    bulletSpawner.getFromPool();
-  }
 }
 void loop()
 {

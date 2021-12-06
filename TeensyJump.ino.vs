@@ -355,10 +355,6 @@ void UPDATE()
   printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
   //Test test;
   //test
-  if (player.isAttacking)
-  {
-    bulletSpawner.getFromPool();
-  }
 }
 void loop()
 {
