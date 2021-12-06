@@ -41,12 +41,12 @@ public:
     y = _y;
   }
   float magnitude(){
-    return qmath.sqrt(x+y);
+    return sqrt(x+y);
   }
   v2 subtract(v2 a, v2 b){
     return v2(a.x-b.x, a.y-b.y);
   }
-}
+};
 
 
 static const unsigned char PROGMEM logo_bmp[] = {};
@@ -222,6 +222,41 @@ public:
     display.drawCircle(bulletPosY+= speed, bulletPosX, bulletSize, SSD1306_WHITE);
   }
 };
+class Enemy {
+  public:
+    int id = random();
+    v2 position{10,10};
+    void _start(){
+
+    }
+    void _update(){
+
+    }
+};
+class EnemySpawner {
+  public:
+  int currentEnemyIndex = 0;
+  Enemy enemyPool [16];
+  Enemy currentEnemy;
+  Enemy getFromPool(){
+    if (currentEnemyIndex > 15)
+      {
+        currentEnemyIndex = 0;
+      }
+      return enemyPool[currentEnemyIndex++];
+  }
+  void _start() {
+      for (int i = 0; i < 16; i++)
+      {
+        Enemy e;
+        e.id = i;
+        enemyPool[i] = e;
+        e._start();
+      }
+      currentEnemy= getFromPool();
+    }
+};
+EnemySpawner enemySpawner;
 class BulletSpawner
 {
   public:
@@ -280,6 +315,7 @@ public:
 void START()
 {
   bulletSpawner._start();
+  enemySpawner._start();
 }
 
 void setup()

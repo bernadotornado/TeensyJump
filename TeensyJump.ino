@@ -31,6 +31,24 @@ void printStr(char *string, int size)
   display.setCursor(0, 0);
   display.println(string);
 }
+class v2
+{
+public:
+  int x;
+  int y;
+  v2(int _x, int _y){
+    x = _x;
+    y = _y;
+  }
+  float magnitude(){
+    return sqrt(x+y);
+  }
+  v2 subtract(v2 a, v2 b){
+    return v2(a.x-b.x, a.y-b.y);
+  }
+};
+
+
 static const unsigned char PROGMEM logo_bmp[] = {};
 const int MPU_ADDR = 0x68;                                 // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
 int16_t accelerometer_x, accelerometer_y, accelerometer_z; // variables for accelerometer raw data
@@ -204,6 +222,41 @@ public:
     display.drawCircle(bulletPosY+= speed, bulletPosX, bulletSize, SSD1306_WHITE);
   }
 };
+class Enemy {
+  public:
+    int id = random();
+    v2 position{10,10};
+    void _start(){
+
+    }
+    void _update(){
+
+    }
+};
+class EnemySpawner {
+  public:
+  int currentEnemyIndex = 0;
+  Enemy enemyPool [16];
+  Enemy currentEnemy;
+  Enemy getFromPool(){
+    if (currentEnemyIndex > 15)
+      {
+        currentEnemyIndex = 0;
+      }
+      return enemyPool[currentEnemyIndex++];
+  }
+  void _start() {
+      for (int i = 0; i < 16; i++)
+      {
+        Enemy e;
+        e.id = i;
+        enemyPool[i] = e;
+        e._start();
+      }
+      currentEnemy= getFromPool();
+    }
+};
+EnemySpawner enemySpawner;
 class BulletSpawner
 {
   public:
@@ -262,6 +315,7 @@ public:
 void START()
 {
   bulletSpawner._start();
+  enemySpawner._start();
 }
 
 void setup()
