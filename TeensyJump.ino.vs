@@ -197,14 +197,29 @@ public:
   bool onInit = true;
   float bulletPosX = 0;
   float bulletPosY = 0;
-  float initPosX = 0;
+  float initPosX = 0;//ok hast du schon es irgendwie eingezäunt? was meinst ja weißt du ungefähr wo der fehler auftritt und was is der überhaupt
+  /*
+  ja also folgendes:
+  ich bekomm die bulllet aus dem pool
+  ich weiß, dass die _start von der Bullet ausgefürht wird
+  ich weiß, dass es im pool verschiedene bullets sind, weil ich die verscheidenen ids auf dem display anzeigen kann und per knopfdruck durchcyclen kann.
+  in der start setze ich die speed auf x>0 
+  dh es sollte sich nach oben bewegen, da die alle in bulletspawner._update die _update von den bullets ausgeführt wird.
+  zudem habe ich auch den bool render eingebaut, so dass nur die currentbullet gerendert wird.
+
+
+  das alles ist eigentlich in start bla bla bla 
+  es wird nicht gerendert, selbst wenn es true ist 
+  die bullets bewegen sich nicht. bewegen sich nicht visuell kein plan, sie rendern auch nimma aus irgendeinem grund.
+  
+  */
   float initPosY = 128;
  // int initTime = 0;
   int id = random();
   int position = 0;
   int speed = 0;
   int translate = 0;
-  bool render = false;
+  bool render = true;
   bool fire = false;
 
   void _start() {
@@ -230,12 +245,21 @@ public:
     bulletPosY = 100;
   }
   void _update() {
+
+     Serial.print(currentBullet.render ? "true": "false");
     if(!fire)
       bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
     translate+= speed;
     bulletPosY = initPosY+translate;
-    if(render)
+    if(render){
       display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
+      Serial.println("eiaofpsdfasd");
+      //gute frage
+    }
+      //kommts da rein?
+      //nein ???
+      //ok schau kurz
+      // WTF ES IST TRUE???
 
     if(bulletPosY > 255){
       reset();
@@ -276,10 +300,10 @@ class Enemy {
         v2 temp2{0,id};
 
         position.x++;
-        Serial.print("this id: ");
-        Serial.println(convert_int16_to_str(this->id));
-        Serial.print("position: ");
-        Serial.println(convert_int16_to_str(this->position.y));
+        // Serial.print("this id: ");
+        // Serial.println(convert_int16_to_str(this->id));
+        // Serial.print("position: ");
+        // Serial.println(convert_int16_to_str(this->position.y));
         
     }
 };
@@ -339,15 +363,35 @@ class BulletSpawner
         b._start();
       }
       currentBullet = getFromPool();
-    }
+    }//BRO..... du musst es kopieren oder es is nd live gesynct
+    // was meinst
+    //arduino is dumm dass heißt wenn du d
+    // ich kopiers manuell rüber
+    //ah ok sry internet is schrott
+    // aber hast du irgendeine ahnung wait
     void _update() {
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
+        currentBullet.render = true;
+        Serial.println("");
+       
+        Serial.println("");
         currentBullet._start();
         //currentBullet.fire = true;
-        currentBullet.render = true;
+        
       }
+/*
+  Da sehen wir, dass render auf true gesetzt wird.
+  ich weiß, dass das ausgeführt wird 
+  also innerhalb des ifs {}
+
+
+
+*/
+
+
+
       for (int i = 0; i < 16; i++) {
         bulletPool[i]._update();
       }
