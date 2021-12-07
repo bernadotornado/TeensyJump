@@ -264,6 +264,9 @@ class Enemy {
           display.drawLine(position.y-6, position.x-3+(i*7), position.y-9, position.x-3+(i*7),SSD1306_WHITE);
           display.drawLine(position.y-9, position.x-3+(i*7), position.y-9, position.x-5+(i*7),SSD1306_WHITE);  
         }
+        for (int i = 0; i<5; i++){
+          display.drawLine(position.y+20, position.x-4+(i*3), position.y-3+20, position.x-1+(i*3),SSD1306_WHITE);
+        }
     }
     void _update(){
       renderEnemy();
@@ -352,15 +355,25 @@ BulletSpawner bulletSpawner;
 class Plattform
 {
 public:
-  float plattformWidth = 10;
-  float plattformHeight = 5;
-  float plattformPosX = 0;
-  float plattformPosY = 0;
+  v2 position{10,10};
+  bool isBroken = true;
   void _start(){
 
   }
-  void _update(){
+  void renderBrokenPlattform(){
+    for (int i = 0; i<5; i++){
+          display.drawLine(position.y+20, position.x-4+(i*3), position.y-3+20, position.x-1+(i*3),SSD1306_WHITE);
+        }
+  }
+  void renderPlattform() {
 
+  }
+  void _update(){
+    if(!isBroken){
+      renderPlattform();
+    } else{
+      renderPlattform();
+    }
   }
 };
 
