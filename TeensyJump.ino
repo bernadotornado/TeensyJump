@@ -192,6 +192,8 @@ public:
 Player player;
 class Bullet
 {
+  private:
+  bool render = true;
 public:
   float bulletSize = 2;
   bool onInit = true;
@@ -219,24 +221,30 @@ public:
   int position = 0;
   int speed = 0;
   int translate = 0;
-  bool render = true;
+  
   bool fire = false;
 
+  float calculateInitPosY(){
+    return player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2;
+  }
+  float calculateInitPosX(){
+    return ((player.playerX - (player.playerWidth / 2)) + 2);
+  }
   void _start() {
    // initTime = delta;
     speed = 1;
-    initPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
-    initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2;
+    initPosX = calculateInitPosX();
+    initPosY =  calculateInitPosY();
     bulletPosX = initPosX;
     bulletPosY = initPosY;
   }
   void reset(){
-    speed = 0;
-    bulletPosY= initPosY;
-    bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
+    initPosX = calculateInitPosX();
+    initPosY =  calculateInitPosY();
+    bulletPosY= calculateInitPosY();
+    bulletPosX = calculateInitPosX();
     render = true;
     fire = false;
-    translate = 0;
 
   }//wart kurz ichg bin auf euner spur
   void hibernate(){
@@ -244,6 +252,7 @@ public:
     bulletPosX = 100;
     bulletPosY = 100;
   }
+  
   void _update() {
 
     Serial.println("");
@@ -256,7 +265,7 @@ public:
       bulletPosY = initPosY+translate;
     }
     if(render){
-      display.drawCircle(bulletPosY, bulletPosX, id, SSD1306_WHITE);
+      display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
       //ok ok render wird ausgeführt, er fliegt nach oben. 
       //nächstes problem ich kann irgendwie nicht die bullet dazu bringen, dass nur der currentbullet fliegt
 
@@ -311,7 +320,7 @@ class Enemy {
         v2 temp{0,1};
         v2 temp2{0,id};
 
-        position.x++;
+        position.x+= 10* sin(delta);
         // Serial.print("this id: ");
         // Serial.println(convert_int16_to_str(this->id));
         // Serial.print("position: ");
@@ -339,7 +348,7 @@ class EnemySpawner {
         enemyPool[i] = e;
         e._start();
       }
-      currentEnemy= getFromPool();
+      //currentEnemy= getFromPool();
     }
   void _update(){
     for (int i = 0; i<16; i++)
@@ -391,7 +400,7 @@ class BulletSpawner
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
-        currentBullet.render = true;
+        //currentBullet.render = true;
         currentBullet.fire = true;
         bulletPool[currentBulletIndex]= currentBullet; 
         //currentBullet._start();
@@ -488,7 +497,7 @@ void UPDATE()
   enemySpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
-  printStr(convert_int16_to_str(bulletSpawner.currentBullet.id), 1);
+  printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
   //Test test;
   //test
 }
