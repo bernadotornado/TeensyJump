@@ -346,6 +346,7 @@ class EnemySpawner {
     {
        Enemy _e=  enemyPool[i];
        _e._update();
+       enemyPool[i]= _e;
 
 
     }
@@ -375,6 +376,8 @@ class BulletSpawner
         b.id = i;
         b._start();
         bulletPool[i] = b;
+
+      
         
       }
       currentBullet = getFromPool();
@@ -403,11 +406,10 @@ class BulletSpawner
 
 
 */
-
-
-
       for (int i = 0; i < 16; i++) {
-        bulletPool[i]._update();
+        Bullet _b = bulletPool[i];
+        _b._update();
+        bulletPool[i]= _b;
       }
     }
 };
