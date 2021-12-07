@@ -265,7 +265,7 @@ class Enemy {
           display.drawLine(position.y-9, position.x-3+(i*7), position.y-9, position.x-5+(i*7),SSD1306_WHITE);  
         }
         for (int i = 0; i<3; i++){
-          int yoffset = 10;
+          int yoffset = -4;
           display.drawPixel(position.y+yoffset, position.x-2-1,SSD1306_INVERSE) ;
           display.drawLine(position.y+yoffset, position.x+(i*2)-1, position.y-1+yoffset, position.x-1+(i*2)-1,SSD1306_INVERSE);
         }
