@@ -226,7 +226,7 @@ public:
    // initTime = delta;
     speed = 1;
     initPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
-    initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
+    initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2;
     bulletPosX = initPosX;
     bulletPosY = initPosY;
   }
@@ -238,7 +238,7 @@ public:
     fire = false;
     translate = 0;
 
-  }
+  }//wart kurz ichg bin auf euner spur
   void hibernate(){
     speed = 0;
     bulletPosX = 100;
@@ -246,13 +246,25 @@ public:
   }
   void _update() {
 
-     Serial.print(currentBullet.render ? "true": "false");
+    Serial.println("");
+    Serial.print("id: "); Serial.print(convert_int16_to_str(id)); Serial.print(" fire: "); Serial.print(fire);
+    Serial.println("");
     if(!fire)
       bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
-    translate+= speed;
-    bulletPosY = initPosY+translate;
+    else{
+      translate+= speed;
+      bulletPosY = initPosY+translate;
+    }
     if(render){
-      display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
+      display.drawCircle(bulletPosY, bulletPosX, id, SSD1306_WHITE);
+      //ok ok render wird ausgeführt, er fliegt nach oben. 
+      //nächstes problem ich kann irgendwie nicht die bullet dazu bringen, dass nur der currentbullet fliegt
+
+      //es fliegen alle, selbst die die gar nicht "instanziert" sind?
+      // es sind alle instanziiet ich wegen bullet pool aber ja wate ich mach kamera an
+      // es sin alle übereinander
+      //bruh sry es waren 3 sekunden pro frame
+      //aber das heißt, dass alle bewegt werden
       Serial.println("eiaofpsdfasd");
       //gute frage
     }
@@ -261,7 +273,7 @@ public:
       //ok schau kurz
       // WTF ES IST TRUE???
 
-    if(bulletPosY > 255){
+    if(bulletPosY > 128){
       reset();
     }
   }
@@ -359,8 +371,11 @@ class BulletSpawner
       {
         Bullet b;
         //b.id = i;
-        bulletPool[i] = b;
+
+        b.id = i;
         b._start();
+        bulletPool[i] = b;
+        
       }
       currentBullet = getFromPool();
     }//BRO..... du musst es kopieren oder es is nd live gesynct
@@ -374,10 +389,9 @@ class BulletSpawner
         //currentBullet.hibernate();
         currentBullet = getFromPool();
         currentBullet.render = true;
-        Serial.println("");
-       
-        Serial.println("");
-        currentBullet._start();
+        currentBullet.fire = true;
+        bulletPool[currentBulletIndex]= currentBullet; 
+        //currentBullet._start();
         //currentBullet.fire = true;
         
       }
