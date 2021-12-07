@@ -214,13 +214,12 @@ public:
     initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
     bulletPosX = initPosX;
     bulletPosY = initPosY;
-    id = 500;
   }
   void reset(){
     speed = 0;
     bulletPosY= initPosY;
     bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
-    render = false;
+    render = true;
     fire = false;
     translate = 0;
 
@@ -237,18 +236,29 @@ public:
     bulletPosY = initPosY+translate;
     if(render)
       display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
+
+    if(bulletPosY > 255){
+      reset();
+    }
   }
 };
 class Enemy {
   public:
     Enemy(){};
     int id = random();
-    v2 position{10,10};
+    v2 position{20,10};
     void _start(){
       position.x += id;
     }
+    void renderEnemy() {
+      
+      
+        display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
+        display.fillCircle(position.y, position.x, 2, SSD1306_INVERSE);
+        display.drawPixel(position.y, position.x, SSD1306_WHITE);
+    }
     void _update(){
-        display.drawCircle(position.y, position.x, 3, SSD1306_WHITE);
+      renderEnemy();
         v2 temp{0,1};
         v2 temp2{0,id};
 
@@ -260,7 +270,6 @@ class Enemy {
         
     }
 };
-Enemy enemy;
 class EnemySpawner {
   public:
   int currentEnemyIndex = 0;
@@ -323,6 +332,8 @@ class BulletSpawner
         //currentBullet.hibernate();
         currentBullet = getFromPool();
         currentBullet._start();
+        //currentBullet.fire = true;
+        currentBullet.render = true;
       }
       for (int i = 0; i < 16; i++) {
         bulletPool[i]._update();
