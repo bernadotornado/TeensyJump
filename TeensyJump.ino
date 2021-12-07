@@ -246,7 +246,7 @@ class Enemy {
   public:
     Enemy(){};
     int id = random();
-    v2 position{20,10};
+    v2 position{display.height()/2,40};
     void _start(){
       position.x += id;
     }
@@ -256,8 +256,13 @@ class Enemy {
         display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
         display.fillCircle(position.y, position.x-1, 2, SSD1306_INVERSE);
         display.drawPixel(position.y, position.x-1, SSD1306_WHITE);
-        for(int i = 0; i < 4; i++){
-          display.drawLine(position.y+3, position.x-4+(i*2), position.y+6, position.x-4+(i*2),SSD1306_WHITE);
+        for(int i = 0; i < 5; i++){
+          display.drawLine(position.y+3, position.x-4+(i*2), position.y+7- (i == 0||i == 4 ? 1:0), position.x-4+(i*2),SSD1306_WHITE);
+        }
+        display.fillRect( position.y-6, position.x-4, 4, 10, SSD1306_WHITE);
+        for(int i = 0; i<2; i++){
+          display.drawLine(position.y-6, position.x-3+(i*7), position.y-9, position.x-3+(i*7),SSD1306_WHITE);
+          display.drawLine(position.y-9, position.x-3+(i*7), position.y-9, position.x-5+(i*7),SSD1306_WHITE);  
         }
     }
     void _update(){
