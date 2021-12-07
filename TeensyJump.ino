@@ -234,7 +234,7 @@ public:
     speed = 0;
     bulletPosY= initPosY;
     bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
-    render = false;
+    render = true;
     fire = false;
     translate = 0;
 
