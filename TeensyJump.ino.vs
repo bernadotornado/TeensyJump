@@ -46,6 +46,9 @@ public:
   v2 subtract(v2 a, v2 b){
     return v2(a.x-b.x, a.y-b.y);
   }
+  v2 add(v2 a, v2 b){
+    return v2(a.x+b.x, a.y+b.y);
+  }
 };
 
 
@@ -211,6 +214,7 @@ public:
     initPosY =  player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2+translate;
     bulletPosX = initPosX;
     bulletPosY = initPosY;
+    id = 500;
   }
   void reset(){
     speed = 0;
@@ -237,15 +241,26 @@ public:
 };
 class Enemy {
   public:
+    Enemy(){};
     int id = random();
     v2 position{10,10};
     void _start(){
-
+      position.x += id;
     }
     void _update(){
+        display.drawCircle(position.y, position.x, 3, SSD1306_WHITE);
+        v2 temp{0,1};
+        v2 temp2{0,id};
 
+        position.x++;
+        Serial.print("this id: ");
+        Serial.println(convert_int16_to_str(this->id));
+        Serial.print("position: ");
+        Serial.println(convert_int16_to_str(this->position.y));
+        
     }
 };
+Enemy enemy;
 class EnemySpawner {
   public:
   int currentEnemyIndex = 0;
@@ -261,13 +276,23 @@ class EnemySpawner {
   void _start() {
       for (int i = 0; i < 16; i++)
       {
-        Enemy e;
+        Enemy e {};
         e.id = i;
         enemyPool[i] = e;
         e._start();
       }
       currentEnemy= getFromPool();
     }
+  void _update(){
+    for (int i = 0; i<16; i++)
+    {
+       Enemy _e=  enemyPool[i];
+       _e._update();
+
+
+    }
+    
+  }
 };
 EnemySpawner enemySpawner;
 class BulletSpawner
@@ -287,7 +312,7 @@ class BulletSpawner
       for (int i = 0; i < 16; i++)
       {
         Bullet b;
-        b.id = i;
+        //b.id = i;
         bulletPool[i] = b;
         b._start();
       }
@@ -297,12 +322,8 @@ class BulletSpawner
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
-        Serial.println(convert_int16_to_str(currentBullet.id));
-        
         currentBullet._start();
-        Serial.println(convert_int16_to_str(currentBullet.speed));
-        
-        Serial.println(convert_int16_to_str(currentBullet.translate));
+        currentBullet.fire = true;
       }
       for (int i = 0; i < 16; i++) {
         bulletPool[i]._update();
@@ -329,6 +350,15 @@ void START()
 {
   bulletSpawner._start();
   enemySpawner._start();
+  for (int i = 0; i < 16; i++)
+  {
+    Enemy enemies =enemySpawner.enemyPool[i];
+   int ids = enemies.id;
+   enemies.position.y = ids;
+   //Serial.println(convert_int16_to_str(ids));
+
+  }
+  
 }
 
 void setup()
@@ -362,9 +392,10 @@ void UPDATE()
   inputManager._update();
   player._update();
   bulletSpawner._update();
+  enemySpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
-  printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
+  printStr(convert_int16_to_str(bulletSpawner.currentBullet.id), 1);
   //Test test;
   //test
 }
