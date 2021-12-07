@@ -254,8 +254,11 @@ class Enemy {
       
       
         display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
-        display.fillCircle(position.y, position.x, 2, SSD1306_INVERSE);
-        display.drawPixel(position.y, position.x, SSD1306_WHITE);
+        display.fillCircle(position.y, position.x-1, 2, SSD1306_INVERSE);
+        display.drawPixel(position.y, position.x-1, SSD1306_WHITE);
+        for(int i = 0; i < 4; i++){
+          display.drawLine(position.y+3, position.x-4+(i*2), position.y+6, position.x-4+(i*2),SSD1306_WHITE);
+        }
     }
     void _update(){
       renderEnemy();
