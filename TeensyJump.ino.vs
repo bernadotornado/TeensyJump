@@ -409,6 +409,7 @@ class Plattform
 public:
   v2 position{10,10};
   bool isBroken = true;
+  int id = random();
   void _start(){
 
   }
@@ -429,6 +430,40 @@ public:
   }
 };
 
+class PlattformSpawner
+{
+  public:
+    int currentPlattformIndex = 0;
+    Plattform plattformPool[16];
+    Plattform currentPlattform;
+    Plattform getFromPool() {
+      if (currentPlattformIndex > 15)
+      {
+        currentPlattformIndex = 0;
+      }
+      return plattformPool[currentPlattformIndex++];
+    }
+    void _start() {
+      for (int i = 0; i < 16; i++)
+      {
+        Plattform p;
+        p.id = i;
+        plattformPool[i] = p;
+      }
+      currentPlattform = getFromPool();
+    }
+    void _update() {
+      if (player.isAttacking) {
+        currentPlattform = getFromPool();
+        currentPlattform._start();
+        plattformPool[currentPlattformIndex-1]= currentPlattform; 
+        
+      }
+      for (int i = 0; i < 16; i++) {
+        plattformPool[i]._update();
+      }
+    }
+};
 void START()
 {
   bulletSpawner._start();

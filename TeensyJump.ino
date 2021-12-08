@@ -199,24 +199,8 @@ public:
   bool onInit = true;
   float bulletPosX = 0;
   float bulletPosY = 0;
-  float initPosX = 0;//ok hast du schon es irgendwie eingezäunt? was meinst ja weißt du ungefähr wo der fehler auftritt und was is der überhaupt
-  /*
-  ja also folgendes:
-  ich bekomm die bulllet aus dem pool
-  ich weiß, dass die _start von der Bullet ausgefürht wird
-  ich weiß, dass es im pool verschiedene bullets sind, weil ich die verscheidenen ids auf dem display anzeigen kann und per knopfdruck durchcyclen kann.
-  in der start setze ich die speed auf x>0 
-  dh es sollte sich nach oben bewegen, da die alle in bulletspawner._update die _update von den bullets ausgeführt wird.
-  zudem habe ich auch den bool render eingebaut, so dass nur die currentbullet gerendert wird.
-
-
-  das alles ist eigentlich in start bla bla bla 
-  es wird nicht gerendert, selbst wenn es true ist 
-  die bullets bewegen sich nicht. bewegen sich nicht visuell kein plan, sie rendern auch nimma aus irgendeinem grund.
-  
-  */
+  float initPosX = 0;
   float initPosY = 128;
- // int initTime = 0;
   int bullet_id = random();
   int position = 0;
   int speed = 0;
@@ -425,6 +409,7 @@ class Plattform
 public:
   v2 position{10,10};
   bool isBroken = true;
+  int id = random();
   void _start(){
 
   }
@@ -445,6 +430,40 @@ public:
   }
 };
 
+class PlattformSpawner
+{
+  public:
+    int currentPlattformIndex = 0;
+    Plattform plattformPool[16];
+    Plattform currentPlattform;
+    Plattform getFromPool() {
+      if (currentPlattformIndex > 15)
+      {
+        currentPlattformIndex = 0;
+      }
+      return plattformPool[currentPlattformIndex++];
+    }
+    void _start() {
+      for (int i = 0; i < 16; i++)
+      {
+        Plattform p;
+        p.id = i;
+        plattformPool[i] = p;
+      }
+      currentPlattform = getFromPool();
+    }
+    void _update() {
+      if (player.isAttacking) {
+        currentPlattform = getFromPool();
+        currentPlattform._start();
+        plattformPool[currentPlattformIndex-1]= currentPlattform; 
+        
+      }
+      for (int i = 0; i < 16; i++) {
+        plattformPool[i]._update();
+      }
+    }
+};
 void START()
 {
   bulletSpawner._start();
