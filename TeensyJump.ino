@@ -238,6 +238,7 @@ public:
     bulletPosX = initPosX;
     bulletPosY = initPosY;
     translate = 0;
+    fire = false;
   }
   void reset(){
     initPosX = calculateInitPosX();
