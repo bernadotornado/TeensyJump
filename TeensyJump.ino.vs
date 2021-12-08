@@ -199,29 +199,13 @@ public:
   bool onInit = true;
   float bulletPosX = 0;
   float bulletPosY = 0;
-  float initPosX = 0;//ok hast du schon es irgendwie eingezäunt? was meinst ja weißt du ungefähr wo der fehler auftritt und was is der überhaupt
-  /*
-  ja also folgendes:
-  ich bekomm die bulllet aus dem pool
-  ich weiß, dass die _start von der Bullet ausgefürht wird
-  ich weiß, dass es im pool verschiedene bullets sind, weil ich die verscheidenen ids auf dem display anzeigen kann und per knopfdruck durchcyclen kann.
-  in der start setze ich die speed auf x>0 
-  dh es sollte sich nach oben bewegen, da die alle in bulletspawner._update die _update von den bullets ausgeführt wird.
-  zudem habe ich auch den bool render eingebaut, so dass nur die currentbullet gerendert wird.
-
-
-  das alles ist eigentlich in start bla bla bla 
-  es wird nicht gerendert, selbst wenn es true ist 
-  die bullets bewegen sich nicht. bewegen sich nicht visuell kein plan, sie rendern auch nimma aus irgendeinem grund.
-  
-  */
+  float initPosX = 0;
   float initPosY = 128;
- // int initTime = 0;
   int bullet_id = random();
   int position = 0;
   int speed = 0;
   int translate = 0;
-   int cspeed = 4;
+   int cspeed = 6;
   bool fire = false;
 
   float calculateInitPosY(){
@@ -261,6 +245,7 @@ public:
 //    {
 //        display.drawLine(bulletPosY, bulletPosX-2 + i*2, bulletPosY -3, bulletPosX -2+i*2, SSD1306_WHITE);
 //    }
+  display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
     
   }
   

@@ -221,7 +221,7 @@ public:
   int position = 0;
   int speed = 0;
   int translate = 0;
-   int cspeed = 4;
+   int cspeed = 6;
   bool fire = false;
 
   float calculateInitPosY(){
@@ -261,6 +261,7 @@ public:
 //    {
 //        display.drawLine(bulletPosY, bulletPosX-2 + i*2, bulletPosY -3, bulletPosX -2+i*2, SSD1306_WHITE);
 //    }
+  display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
     
   }
   
