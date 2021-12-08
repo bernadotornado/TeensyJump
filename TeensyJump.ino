@@ -513,7 +513,9 @@ void UPDATE()
   enemySpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
-  printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex-1), 1);
+  char str [20];
+  sprintf(str, "           SCORE: %d", bulletSpawner.currentBulletIndex-1);
+  printStr(str, 1);
   //Test test;
   //test
 }
