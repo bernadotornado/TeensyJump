@@ -220,6 +220,7 @@ public:
   int bullet_id = random();
   int position = 0;
   int speed = 0;
+  const int constSpeed = 2;
   int translate = 0;
   
   bool fire = false;
@@ -232,7 +233,7 @@ public:
   }
   void _start() {
    // initTime = delta;
-    speed = 1;
+    speed = constSpeed;
     initPosX = calculateInitPosX();
     initPosY =  calculateInitPosY();
     bulletPosX = initPosX;

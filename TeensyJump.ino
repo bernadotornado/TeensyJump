@@ -232,7 +232,7 @@ public:
   }
   void _start() {
    // initTime = delta;
-    speed = 1;
+    speed = 4;
     initPosX = calculateInitPosX();
     initPosY =  calculateInitPosY();
     bulletPosX = initPosX;
@@ -323,7 +323,7 @@ class Enemy {
         v2 temp{0,1};
         v2 temp2{0,id};
 
-        //position.x+= 10* sin(delta);
+        position.x+= 10* sin(delta);
         // Serial.print("this id: ");
         // Serial.println(convert_int16_to_str(this->id));
         // Serial.print("position: ");
