@@ -217,7 +217,7 @@ public:
   */
   float initPosY = 128;
  // int initTime = 0;
-  int id = random();
+  int bullet_id = random();
   int position = 0;
   int speed = 0;
   int translate = 0;
@@ -256,7 +256,7 @@ public:
   void _update() {
 
     Serial.println("");
-    Serial.print("id: "); Serial.print(convert_int16_to_str(id)); Serial.print(" fire: "); Serial.print(fire);
+    Serial.print("bullet_id: "); Serial.print(convert_int16_to_str(bullet_id)); Serial.print(" fire: "); Serial.print(fire);
     Serial.println("");
     if(!fire)
       bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
@@ -380,12 +380,14 @@ class BulletSpawner
       for (int i = 0; i < 16; i++)
       {
         Bullet b;
-        //b.id = i;
+        //b.bullet_id = i;
 
-        b.id = i;
+        
+        b.bullet_id = i;
+        
+        
         b._start();
         bulletPool[i] = b;
-
       
         
       }
@@ -402,23 +404,13 @@ class BulletSpawner
         currentBullet = getFromPool();
         //currentBullet.render = true;
         currentBullet.fire = true;
-        bulletPool[currentBulletIndex]= currentBullet; 
+        bulletPool[currentBulletIndex-1]= currentBullet; 
         //currentBullet._start();
         //currentBullet.fire = true;
         
       }
-/*
-  Da sehen wir, dass render auf true gesetzt wird.
-  ich weiß, dass das ausgeführt wird 
-  also innerhalb des ifs {}
-
-
-
-*/
       for (int i = 0; i < 16; i++) {
-        Bullet _b = bulletPool[i];
-        _b._update();
-        bulletPool[i]= _b;
+        bulletPool[i]._update();
       }
     }
 };
