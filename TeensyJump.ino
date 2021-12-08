@@ -237,13 +237,14 @@ public:
     initPosY =  calculateInitPosY();
     bulletPosX = initPosX;
     bulletPosY = initPosY;
+    translate = 0;
   }
   void reset(){
     initPosX = calculateInitPosX();
     initPosY =  calculateInitPosY();
     bulletPosY= calculateInitPosY();
     bulletPosX = calculateInitPosX();
-    render = true;
+    render = false;
     fire = false;
 
   }//wart kurz ichg bin auf euner spur
@@ -283,7 +284,7 @@ public:
       // WTF ES IST TRUE???
 
     if(bulletPosY > 128){
-      reset();
+      _start();
     }
   }
 };
@@ -403,7 +404,9 @@ class BulletSpawner
         //currentBullet.hibernate();
         currentBullet = getFromPool();
         //currentBullet.render = true;
+        currentBullet._start();
         currentBullet.fire = true;
+        
         bulletPool[currentBulletIndex-1]= currentBullet; 
         //currentBullet._start();
         //currentBullet.fire = true;
