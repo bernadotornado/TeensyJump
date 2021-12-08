@@ -220,20 +220,19 @@ public:
   int bullet_id = random();
   int position = 0;
   int speed = 0;
-  const int constSpeed = 2;
   int translate = 0;
-  
+   int cspeed = 4;
   bool fire = false;
 
   float calculateInitPosY(){
-    return player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos+2;
+    return player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos-4;
   }
   float calculateInitPosX(){
     return ((player.playerX - (player.playerWidth / 2)) + 2);
   }
   void _start() {
    // initTime = delta;
-    speed = constSpeed;
+    speed = cspeed;
     initPosX = calculateInitPosX();
     initPosY =  calculateInitPosY();
     bulletPosX = initPosX;
@@ -256,6 +255,14 @@ public:
     bulletPosX = 100;
     bulletPosY = 100;
   }
+  void renderBullet() {
+    display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
+//    for (int i = 0; i < 3; i++)
+//    {
+//        display.drawLine(bulletPosY, bulletPosX-2 + i*2, bulletPosY -3, bulletPosX -2+i*2, SSD1306_WHITE);
+//    }
+    
+  }
   
   void _update() {
 
@@ -269,18 +276,9 @@ public:
       bulletPosY = initPosY+translate;
     }
     if(fire){
-      display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
-      //ok ok render wird ausgeführt, er fliegt nach oben. 
-      //nächstes problem ich kann irgendwie nicht die bullet dazu bringen, dass nur der currentbullet fliegt
-
-      //es fliegen alle, selbst die die gar nicht "instanziert" sind?
-      // es sind alle instanziiet ich wegen bullet pool aber ja wate ich mach kamera an
-      // es sin alle übereinander
-      //bruh sry es waren 3 sekunden pro frame
-      //aber das heißt, dass alle bewegt werden
-      Serial.println("eiaofpsdfasd");
-      //gute frage
+      renderBullet();
     }
+
       //kommts da rein?
       //nein ???
       //ok schau kurz
@@ -324,7 +322,7 @@ class Enemy {
         v2 temp{0,1};
         v2 temp2{0,id};
 
-        //position.x+= 10* sin(delta);
+        position.x+= 10* sin(delta);
         // Serial.print("this id: ");
         // Serial.println(convert_int16_to_str(this->id));
         // Serial.print("position: ");
