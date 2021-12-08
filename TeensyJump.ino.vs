@@ -489,7 +489,7 @@ void UPDATE()
   enemySpawner._update();
   //bulletSpawner.currentBullet._update();
   delta++;
-  printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex), 1);
+  printStr(convert_int16_to_str(bulletSpawner.currentBulletIndex-1), 1);
   //Test test;
   //test
 }
