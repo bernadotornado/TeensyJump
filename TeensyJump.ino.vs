@@ -239,6 +239,7 @@ public:
     bulletPosY = initPosY;
     translate = 0;
     fire = false;
+    render = false;
   }
   void reset(){
     initPosX = calculateInitPosX();
@@ -266,7 +267,7 @@ public:
       translate+= speed;
       bulletPosY = initPosY+translate;
     }
-    if(render){
+    if(fire){
       display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
       //ok ok render wird ausgeführt, er fliegt nach oben. 
       //nächstes problem ich kann irgendwie nicht die bullet dazu bringen, dass nur der currentbullet fliegt
@@ -322,7 +323,7 @@ class Enemy {
         v2 temp{0,1};
         v2 temp2{0,id};
 
-        position.x+= 10* sin(delta);
+        //position.x+= 10* sin(delta);
         // Serial.print("this id: ");
         // Serial.println(convert_int16_to_str(this->id));
         // Serial.print("position: ");
