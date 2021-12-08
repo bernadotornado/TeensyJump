@@ -400,7 +400,7 @@ class BulletSpawner
       if (player.isAttacking) {
         //currentBullet.hibernate();
         currentBullet = getFromPool();
-        currentBullet.render = true;
+        //currentBullet.render = true;
         currentBullet.fire = true;
         bulletPool[currentBulletIndex]= currentBullet; 
         //currentBullet._start();
