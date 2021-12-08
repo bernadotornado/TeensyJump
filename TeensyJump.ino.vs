@@ -61,9 +61,8 @@ int inputpin = 20;
 bool asd = false;
 int val = 0;
 int i = 0;
-int address_sensor1 = 18; //binary equivalent is 1001000
-int address_sensor2 = 17; //binary equivalent is 1001001
-
+//int address_sensor1 = 18; //binary equivalent is 1001000
+//int address_sensor2 = 17; //binary equivalent is 1001001
 int delta = 0;
 float x = 0;
 class GameState
@@ -192,7 +191,7 @@ public:
 Player player;
 class Bullet
 {
-  private:
+private:
   bool render = true;
 public:
   float bulletSize = 2;
@@ -215,7 +214,6 @@ public:
     return ((player.playerX - (player.playerWidth / 2)) + 2);
   }
   void _start() {
-   // initTime = delta;
     speed = cspeed;
     initPosX = calculateInitPosX();
     initPosY =  calculateInitPosY();
@@ -232,8 +230,7 @@ public:
     bulletPosX = calculateInitPosX();
     render = false;
     fire = false;
-
-  }//wart kurz ichg bin auf euner spur
+  }
   void hibernate(){
     speed = 0;
     bulletPosX = 100;
@@ -241,16 +238,9 @@ public:
   }
   void renderBullet() {
     display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
-//    for (int i = 0; i < 3; i++)
-//    {
-//        display.drawLine(bulletPosY, bulletPosX-2 + i*2, bulletPosY -3, bulletPosX -2+i*2, SSD1306_WHITE);
-//    }
   display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
-    
   }
-  
   void _update() {
-
     Serial.println("");
     Serial.print("bullet_id: "); Serial.print(convert_int16_to_str(bullet_id)); Serial.print(" fire: "); Serial.print(fire);
     Serial.println("");
@@ -263,12 +253,6 @@ public:
     if(fire){
       renderBullet();
     }
-
-      //kommts da rein?
-      //nein ???
-      //ok schau kurz
-      // WTF ES IST TRUE???
-
     if(bulletPosY > 128){
       _start();
     }
@@ -283,8 +267,6 @@ class Enemy {
       position.x += id;
     }
     void renderEnemy() {
-      
-      
         display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
         display.fillCircle(position.y, position.x-1, 2, SSD1306_INVERSE);
         display.drawPixel(position.y, position.x-1, SSD1306_WHITE);
@@ -306,13 +288,7 @@ class Enemy {
       renderEnemy();
         v2 temp{0,1};
         v2 temp2{0,id};
-
-        position.x+= 10* sin(delta);
-        // Serial.print("this id: ");
-        // Serial.println(convert_int16_to_str(this->id));
-        // Serial.print("position: ");
-        // Serial.println(convert_int16_to_str(this->position.y));
-        
+        //position.x+= 10* sin(delta);        
     }
 };
 class EnemySpawner {
@@ -335,7 +311,6 @@ class EnemySpawner {
         enemyPool[i] = e;
         e._start();
       }
-      //currentEnemy= getFromPool();
     }
   void _update(){
     for (int i = 0; i<16; i++)
@@ -343,10 +318,7 @@ class EnemySpawner {
        Enemy _e=  enemyPool[i];
        _e._update();
        enemyPool[i]= _e;
-
-
     }
-    
   }
 };
 EnemySpawner enemySpawner;
@@ -367,36 +339,18 @@ class BulletSpawner
       for (int i = 0; i < 16; i++)
       {
         Bullet b;
-        //b.bullet_id = i;
-
-        
         b.bullet_id = i;
-        
-        
         b._start();
         bulletPool[i] = b;
-      
-        
       }
       currentBullet = getFromPool();
-    }//BRO..... du musst es kopieren oder es is nd live gesynct
-    // was meinst
-    //arduino is dumm dass heißt wenn du d
-    // ich kopiers manuell rüber
-    //ah ok sry internet is schrott
-    // aber hast du irgendeine ahnung wait
+    }
     void _update() {
       if (player.isAttacking) {
-        //currentBullet.hibernate();
         currentBullet = getFromPool();
-        //currentBullet.render = true;
         currentBullet._start();
         currentBullet.fire = true;
-        
         bulletPool[currentBulletIndex-1]= currentBullet; 
-        //currentBullet._start();
-        //currentBullet.fire = true;
-        
       }
       for (int i = 0; i < 16; i++) {
         bulletPool[i]._update();
@@ -514,7 +468,7 @@ void UPDATE()
   //bulletSpawner.currentBullet._update();
   delta++;
   char str [20];
-  sprintf(str, "           SCORE: %d", bulletSpawner.currentBulletIndex-1);
+  sprintf(str, "          SCORE: %d", 9999);
   printStr(str, 1);
   //Test test;
   //test
