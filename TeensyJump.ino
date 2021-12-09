@@ -34,9 +34,9 @@ void printStr(char *string, int size)
 class v2
 {
 public:
-  int x;
-  int y;
-  v2(int _x, int _y)
+  float x;
+  float y;
+  v2(float _x, float _y)
   {
     x = _x;
     y = _y;
@@ -419,6 +419,7 @@ public:
          movingPlattformDir =  movingPlattformDir *-1;
       }
     }
+    position.y -= bounce;
     if (!isBroken)
     {
       renderPlattform();
