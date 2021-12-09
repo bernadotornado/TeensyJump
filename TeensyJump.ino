@@ -65,7 +65,7 @@ bool asd = false;
 int val = 0;
 int i = 0;
 int delta = 0;
-int bounceDelta = 0;
+float bounceDelta = 0;
 int bounce = 0;
 float x = 0;
 class GameState
@@ -533,14 +533,14 @@ void UPDATE()
   plattformSpawner._update();
   delta++;
 
-  bounceDelta++;
+  bounceDelta+= 0.1f;
   bounce = calcBounce(bounceDelta);
-  if(bounce> calcRoot){
+  if(bounceDelta> calcRoot){
     bounce = 0;
     bounceDelta = 0;
   }
   char str[20];
-  sprintf(str, "          SCORE: %d", 9999);
+  sprintf(str, "          SCORE: %d", bounce);
   printStr(str, 1);
 }
 void loop()
