@@ -201,7 +201,7 @@ public:
   bool onInit = true;
   float bulletPosX = 0;
   float bulletPosY = 0;
-  float initPosX = 0;
+  float initPosX = 0; 
   float initPosY = 128;
   int bullet_id = random();
   int position = 0;
@@ -403,17 +403,18 @@ public:
   {
     for (int i = 0; i < 5; i++)
     {
-      display.drawLine(position.y + 20, position.x - 4 + (i * 3), position.y - 3 + 20, position.x - 1 + (i * 3), SSD1306_WHITE);
+      display.drawLine(position.y , position.x - 4 + (i * 3), position.y - 3 , position.x - 1 + (i * 3), SSD1306_WHITE);
     }
   }
   void renderPlattform()
   {
     //display.drawLine(position.y + 20, position.x -4, position.y - 3 + 20, position.x - 1 + (4 * 3), SSD1306_WHITE);
-    for(int i = 0; i<5 ;i++){
-      
-    display.fillCircle(position.y + 18, position.x -2+(3*i), 2,SSD1306_WHITE);
+    for (int i = 0; i < 5; i++)
+    {
+
+      display.fillCircle(position.y -2, position.x - 2 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
     }
-    display.fillCircle(position.y + 18, position.x - 1-3 + (4 * 3), 2,SSD1306_WHITE);
+    //display.fillCircle(position.y -2, position.x - 1 - 4 + (4 * 3), 2, SSD1306_WHITE);
   }
   void _update()
   {
@@ -425,6 +426,7 @@ public:
     {
       renderBrokenPlattform();
     }
+    display.drawPixel(position.y, position.x, SSD1306_WHITE);
   }
 };
 Plattform plattform;
@@ -515,7 +517,7 @@ void UPDATE()
   enemySpawner._update();
   plattform.isBroken = true;
   plattform._update();
-  
+
   plattform2.isBroken = false;
   plattform2.position.y = 20;
   plattform2._update();
