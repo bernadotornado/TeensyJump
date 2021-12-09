@@ -403,7 +403,7 @@ public:
   {
     for (int i = 0; i < 5; i++)
     {
-      display.drawLine(position.y +2, position.x - 4 + (i * 3), position.y - 3 +2, position.x - 1 + (i * 3), SSD1306_WHITE);
+      display.drawLine(position.y +2, position.x - 4-3 + (i * 3), position.y - 3 +2, position.x - 1 -3+ (i * 3), SSD1306_WHITE);
     }
   }
   void renderPlattform()
