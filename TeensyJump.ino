@@ -64,9 +64,9 @@ int inputpin = 20;
 bool asd = false;
 int val = 0;
 int i = 0;
-//int address_sensor1 = 18; //binary equivalent is 1001000
-//int address_sensor2 = 17; //binary equivalent is 1001001
 int delta = 0;
+int bounceDelta = 0;
+int bounce = 0;
 float x = 0;
 class GameState
 {
@@ -251,12 +251,6 @@ public:
   }
   void _update()
   {
-    // Serial.println("");
-    // Serial.print("bullet_id: ");
-    // Serial.print(convert_int16_to_str(bullet_id));
-    // Serial.print(" fire: ");
-    // Serial.print(fire);
-    // Serial.println("");
     if (!fire)
       bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
     else
@@ -309,9 +303,6 @@ public:
   void _update()
   {
     renderEnemy();
-    v2 temp{0, 1};
-    v2 temp2{0, id};
-    //position.x+= 10* sin(delta);
   }
 };
 class EnemySpawner
@@ -412,13 +403,10 @@ public:
   }
   void renderPlattform()
   {
-    //display.drawLine(position.y + 20, position.x -4, position.y - 3 + 20, position.x - 1 + (4 * 3), SSD1306_WHITE);
     for (int i = 0; i < 5; i++)
     {
-
       display.fillCircle(position.y , position.x - 5-1 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
     }
-    //display.fillCircle(position.y -2, position.x - 1 - 4 + (4 * 3), 2, SSD1306_WHITE);
   }
   void _update()
   {
@@ -430,10 +418,7 @@ public:
       if(position.x<0){
          movingPlattformDir =  movingPlattformDir *-1;
       }
-
     }
-
-
     if (!isBroken)
     {
       renderPlattform();
@@ -476,35 +461,13 @@ public:
     if (player.isAttacking)
     {
       rnd = random(0,99);
-      Serial.println("");
-      Serial.print("rndasdfasdfgf :"); Serial.print(convert_int16_to_str(rnd));
-    // rnd = map(rnd, -32765, 32765, 0, 99); 
-
-
-    // Serial.println("");
-    // Serial.print("rnd :"); Serial.print(convert_int16_to_str(rnd));
-
-
-
-
-
-
-
-
       currentPlattform = getFromPool();
-      
-
 #define RND random(0,99)
-
-
-
       currentPlattform.isBroken = RND <30;
       currentPlattform.movingPlattformDir = RND <50 ? -1:1;
       currentPlattform.isMovingPlattform = RND <20;
       currentPlattform.hasEnemy = RND <30;
       currentPlattform.position.x = random(0,63);
-      //currentPlattform.position.x += rnd/10;
-      
       currentPlattform._start();
       plattformPool[currentPlattformIndex - 1] = currentPlattform;
     }
@@ -526,7 +489,6 @@ void START()
     Enemy enemies = enemySpawner.enemyPool[i];
     int ids = enemies.id;
     enemies.position.y = ids;
-    //Serial.println(convert_int16_to_str(ids));
   }
 }
 
@@ -539,7 +501,6 @@ void setup()
     for (;;)
       ;
   }
-  // pinMode(A4, INPUT);
   pinMode(inputpin, INPUT);
   display.display();
   delay(2000);
@@ -556,6 +517,13 @@ void setup()
   START();
 }
 
+#define calcCoef 6.32455f
+#define calcRoot 12.64910f
+
+float calcBounce(float x) {
+  return -0.1f*(x-calcCoef)*(x-calcCoef)+4;
+}
+
 void UPDATE()
 {
   inputManager._update();
@@ -563,13 +531,17 @@ void UPDATE()
   bulletSpawner._update();
   enemySpawner._update();
   plattformSpawner._update();
-  //bulletSpawner.currentBullet._update();
   delta++;
+
+  bounceDelta++;
+  bounce = calcBounce(bounceDelta);
+  if(bounce> calcRoot){
+    bounce = 0;
+    bounceDelta = 0;
+  }
   char str[20];
   sprintf(str, "          SCORE: %d", 9999);
   printStr(str, 1);
-  //Test test;
-  //test
 }
 void loop()
 {
@@ -594,7 +566,6 @@ void loop()
     gameState.GameOver();
     return;
   }
-  //Serial.print(convert_int16_to_str(x));
   UPDATE();
   display.display();
   delay(25);

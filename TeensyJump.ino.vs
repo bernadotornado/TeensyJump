@@ -65,6 +65,8 @@ bool asd = false;
 int val = 0;
 int i = 0;
 int delta = 0;
+int bounceDelta = 0;
+int bounce = 0;
 float x = 0;
 class GameState
 {
@@ -515,6 +517,13 @@ void setup()
   START();
 }
 
+#define calcCoef 6.32455f
+#define calcRoot 12.64910f
+
+float calcBounce(float x) {
+  return -0.1f*(x-calcCoef)*(x-calcCoef)+4;
+}
+
 void UPDATE()
 {
   inputManager._update();
@@ -523,6 +532,13 @@ void UPDATE()
   enemySpawner._update();
   plattformSpawner._update();
   delta++;
+
+  bounceDelta++;
+  bounce = calcBounce(bounceDelta);
+  if(bounce> calcRoot){
+    bounce = 0;
+    bounceDelta = 0;
+  }
   char str[20];
   sprintf(str, "          SCORE: %d", 9999);
   printStr(str, 1);
