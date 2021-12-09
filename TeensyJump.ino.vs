@@ -474,7 +474,11 @@ public:
   {
     if (player.isAttacking)
     {
+      float rnd = random();
+      rnd = map(rnd, -32765, 32765, 0, 99);
       currentPlattform = getFromPool();
+      currentPlattform.isMovingPlattform = rnd <20;
+      currentPlattform.isBroken = rnd<30;
       currentPlattform._start();
       plattformPool[currentPlattformIndex - 1] = currentPlattform;
     }
@@ -484,10 +488,13 @@ public:
     }
   }
 };
+PlattformSpawner plattformSpawner;
+
 void START()
 {
   bulletSpawner._start();
   enemySpawner._start();
+  plattformSpawner._start();
   for (int i = 0; i < 16; i++)
   {
     Enemy enemies = enemySpawner.enemyPool[i];
@@ -529,6 +536,7 @@ void UPDATE()
   player._update();
   bulletSpawner._update();
   enemySpawner._update();
+  plattformSpawner._update();
   plattform.isBroken = true;
   plattform._update();
 
