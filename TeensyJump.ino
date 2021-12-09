@@ -251,12 +251,12 @@ public:
   }
   void _update()
   {
-    Serial.println("");
-    Serial.print("bullet_id: ");
-    Serial.print(convert_int16_to_str(bullet_id));
-    Serial.print(" fire: ");
-    Serial.print(fire);
-    Serial.println("");
+    // Serial.println("");
+    // Serial.print("bullet_id: ");
+    // Serial.print(convert_int16_to_str(bullet_id));
+    // Serial.print(" fire: ");
+    // Serial.print(fire);
+    // Serial.println("");
     if (!fire)
       bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
     else
@@ -394,9 +394,11 @@ class Plattform
 {
 public:
   v2 position{10, 10};
-  bool isBroken = true;
+  bool isBroken = false;
   bool isMovingPlattform = false;
+  bool hasEnemy = false;
   int movingPlattformDir = 1;
+  
   int id = random();
   void _start()
   {
@@ -442,9 +444,6 @@ public:
     }
   }
 };
-Plattform plattform;
-Plattform plattform2;
-Plattform plattform3;
 
 class PlattformSpawner
 {
@@ -452,6 +451,7 @@ public:
   int currentPlattformIndex = 0;
   Plattform plattformPool[16];
   Plattform currentPlattform;
+  int rnd = 0;
   Plattform getFromPool()
   {
     if (currentPlattformIndex > 15)
@@ -466,6 +466,7 @@ public:
     {
       Plattform p;
       p.id = i;
+      p.position.y = p.id*5; 
       plattformPool[i] = p;
     }
     currentPlattform = getFromPool();
@@ -474,8 +475,35 @@ public:
   {
     if (player.isAttacking)
     {
+      rnd = random(0,99);
+      Serial.println("");
+      Serial.print("rndasdfasdfgf :"); Serial.print(convert_int16_to_str(rnd));
+    // rnd = map(rnd, -32765, 32765, 0, 99); 
+
+
+    // Serial.println("");
+    // Serial.print("rnd :"); Serial.print(convert_int16_to_str(rnd));
+
+
+
+
+
+
+
+
       currentPlattform = getFromPool();
-      currentPlattform.isMovingPlattform = true;
+      
+
+#define RND random(0,99)
+
+
+
+      currentPlattform.isBroken = RND <30;
+      currentPlattform.movingPlattformDir = RND <50 ? -1:1;
+      currentPlattform.isMovingPlattform = RND <20;
+      currentPlattform.hasEnemy = RND <30;
+      //currentPlattform.position.x += rnd/10;
+      
       currentPlattform._start();
       plattformPool[currentPlattformIndex - 1] = currentPlattform;
     }
@@ -492,7 +520,6 @@ void START()
   bulletSpawner._start();
   enemySpawner._start();
   plattformSpawner._start();
-  PlattformSpawner
   for (int i = 0; i < 16; i++)
   {
     Enemy enemies = enemySpawner.enemyPool[i];
@@ -535,16 +562,6 @@ void UPDATE()
   bulletSpawner._update();
   enemySpawner._update();
   plattformSpawner._update();
-  plattform.isBroken = true;
-  plattform._update();
-
-  plattform2.isBroken = false;
-  plattform2.position.y = 20;
-  plattform2._update();
-  plattform3.isBroken = false;
-  plattform3.position.y = 30;
-  plattform3.isMovingPlattform = true;
-  plattform3._update();
   //bulletSpawner.currentBullet._update();
   delta++;
   char str[20];
