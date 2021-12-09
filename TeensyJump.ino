@@ -395,6 +395,8 @@ class Plattform
 public:
   v2 position{10, 10};
   bool isBroken = true;
+  bool isMovingPlattform = false;
+  int movingPlattformDir = 1;
   int id = random();
   void _start()
   {
@@ -403,7 +405,7 @@ public:
   {
     for (int i = 0; i < 5; i++)
     {
-      display.drawLine(position.y +2, position.x - 4-3 + (i * 3), position.y - 3 +2, position.x - 1 -3+ (i * 3), SSD1306_WHITE);
+      display.drawLine(position.y +2, position.x - 4-3-1 + (i * 3), position.y - 3 +2, position.x - 1-1 -3+ (i * 3), SSD1306_WHITE);
     }
   }
   void renderPlattform()
@@ -412,12 +414,24 @@ public:
     for (int i = 0; i < 5; i++)
     {
 
-      display.fillCircle(position.y , position.x - 5 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
+      display.fillCircle(position.y , position.x - 5-1 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
     }
     //display.fillCircle(position.y -2, position.x - 1 - 4 + (4 * 3), 2, SSD1306_WHITE);
   }
   void _update()
   {
+    if(isMovingPlattform){
+      position.x+= movingPlattformDir;
+      if (position.x > 63){
+        movingPlattformDir =  movingPlattformDir *-1;
+      }
+      if(position.x<0){
+         movingPlattformDir =  movingPlattformDir *-1;
+      }
+
+    }
+
+
     if (!isBroken)
     {
       renderPlattform();
@@ -426,12 +440,11 @@ public:
     {
       renderBrokenPlattform();
     }
-    display.drawPixel(position.y, position.x, SSD1306_INVERSE);
-    //display.drawPixel(position.y-1, position.x, SSD1306_INVERSE);
   }
 };
 Plattform plattform;
 Plattform plattform2;
+Plattform plattform3;
 
 class PlattformSpawner
 {
@@ -522,6 +535,10 @@ void UPDATE()
   plattform2.isBroken = false;
   plattform2.position.y = 20;
   plattform2._update();
+  plattform3.isBroken = false;
+  plattform3.position.y = 30;
+  plattform3.isMovingPlattform = true;
+  plattform3._update();
   //bulletSpawner.currentBullet._update();
   delta++;
   char str[20];
