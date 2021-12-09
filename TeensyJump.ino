@@ -502,6 +502,7 @@ public:
       currentPlattform.movingPlattformDir = RND <50 ? -1:1;
       currentPlattform.isMovingPlattform = RND <20;
       currentPlattform.hasEnemy = RND <30;
+      currentPlattform.position.x = random(0,63);
       //currentPlattform.position.x += rnd/10;
       
       currentPlattform._start();
