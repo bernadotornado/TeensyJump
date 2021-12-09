@@ -8,6 +8,7 @@
 #include "qmath.h"
 //#include "Test.hpp"
 
+
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET 4        // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -66,6 +67,7 @@ int val = 0;
 int i = 0;
 int delta = 0;
 float bounceDelta = 0;
+int bounceInvert = 1;
 int bounce = 0;
 float x = 0;
 class GameState
@@ -178,6 +180,8 @@ public:
     {
       playerX = display.height() + 1;
     }
+
+    //playerYPadding = bounce;
   }
   void handleInput()
   {
@@ -410,6 +414,25 @@ public:
   }
   void _update()
   {
+
+
+    if (position.y < 0)
+    {
+      rnd = random(0,99);
+      currentPlattform = this;
+#define RND random(0,99)
+      currentPlattform.isBroken = RND <30;
+      currentPlattform.movingPlattformDir = RND <50 ? -1:1;
+      currentPlattform.isMovingPlattform = RND <20;
+      currentPlattform.hasEnemy = RND <30;
+      currentPlattform.position.x = random(0,63);
+    }
+
+    position.y --;
+
+
+
+
     if(isMovingPlattform){
       position.x+= movingPlattformDir;
       if (position.x > 63){
@@ -419,7 +442,7 @@ public:
          movingPlattformDir =  movingPlattformDir *-1;
       }
     }
-    position.y -= bounce;
+   // position.y = bounce;
     if (!isBroken)
     {
       renderPlattform();
@@ -459,19 +482,7 @@ public:
   }
   void _update()
   {
-    if (player.isAttacking)
-    {
-      rnd = random(0,99);
-      currentPlattform = getFromPool();
-#define RND random(0,99)
-      currentPlattform.isBroken = RND <30;
-      currentPlattform.movingPlattformDir = RND <50 ? -1:1;
-      currentPlattform.isMovingPlattform = RND <20;
-      currentPlattform.hasEnemy = RND <30;
-      currentPlattform.position.x = random(0,63);
-      currentPlattform._start();
-      plattformPool[currentPlattformIndex - 1] = currentPlattform;
-    }
+    
     for (int i = 0; i < 16; i++)
     {
       plattformPool[i]._update();
@@ -535,10 +546,12 @@ void UPDATE()
   delta++;
 
   bounceDelta+= 0.1f;
+ // bounce = bounce*bounceInvert;
   bounce = calcBounce(bounceDelta);
   if(bounceDelta> calcRoot){
     bounce = 0;
     bounceDelta = 0;
+    bounceInvert  = bounceInvert *-1;
   }
   char str[20];
   sprintf(str, "          SCORE: %d", bounce);

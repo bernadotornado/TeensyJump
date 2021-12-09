@@ -8,6 +8,7 @@
 #include "qmath.h"
 //#include "Test.hpp"
 
+
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
 #define SCREEN_HEIGHT 64    // OLED display height, in pixels
 #define OLED_RESET 4        // Reset pin # (or -1 if sharing Arduino reset pin)
@@ -66,6 +67,7 @@ int val = 0;
 int i = 0;
 int delta = 0;
 float bounceDelta = 0;
+int bounceInvert = 1;
 int bounce = 0;
 float x = 0;
 class GameState
@@ -178,6 +180,8 @@ public:
     {
       playerX = display.height() + 1;
     }
+
+    //playerYPadding = bounce;
   }
   void handleInput()
   {
@@ -419,7 +423,7 @@ public:
          movingPlattformDir =  movingPlattformDir *-1;
       }
     }
-    position.y -= bounce;
+   // position.y = bounce;
     if (!isBroken)
     {
       renderPlattform();
@@ -535,10 +539,12 @@ void UPDATE()
   delta++;
 
   bounceDelta+= 0.1f;
+ // bounce = bounce*bounceInvert;
   bounce = calcBounce(bounceDelta);
   if(bounceDelta> calcRoot){
     bounce = 0;
     bounceDelta = 0;
+    bounceInvert  = bounceInvert *-1;
   }
   char str[20];
   sprintf(str, "          SCORE: %d", bounce);
