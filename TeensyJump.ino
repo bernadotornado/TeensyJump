@@ -414,6 +414,26 @@ public:
   }
   void _update()
   {
+
+
+    if (position.y < 0)
+    {
+      position.y = 128;
+      //rnd = random(0,99);
+      
+#define RND random(0,99)
+      isBroken = RND <30;
+      movingPlattformDir = RND <50 ? -1:1;
+      isMovingPlattform = RND <20;
+      hasEnemy = RND <30;
+      position.x = random(0,63);
+    }
+
+    position.y --;
+
+
+
+
     if(isMovingPlattform){
       position.x+= movingPlattformDir;
       if (position.x > 63){
@@ -456,26 +476,14 @@ public:
     {
       Plattform p;
       p.id = i;
-      p.position.y = p.id*5; 
+      p.position.y = p.id*10; 
       plattformPool[i] = p;
     }
     currentPlattform = getFromPool();
   }
   void _update()
   {
-    if (player.isAttacking)
-    {
-      rnd = random(0,99);
-      currentPlattform = getFromPool();
-#define RND random(0,99)
-      currentPlattform.isBroken = RND <30;
-      currentPlattform.movingPlattformDir = RND <50 ? -1:1;
-      currentPlattform.isMovingPlattform = RND <20;
-      currentPlattform.hasEnemy = RND <30;
-      currentPlattform.position.x = random(0,63);
-      currentPlattform._start();
-      plattformPool[currentPlattformIndex - 1] = currentPlattform;
-    }
+    
     for (int i = 0; i < 16; i++)
     {
       plattformPool[i]._update();

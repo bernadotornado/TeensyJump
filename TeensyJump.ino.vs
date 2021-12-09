@@ -418,14 +418,15 @@ public:
 
     if (position.y < 0)
     {
-      rnd = random(0,99);
-      currentPlattform = this;
+      position.y = 128;
+      //rnd = random(0,99);
+      
 #define RND random(0,99)
-      currentPlattform.isBroken = RND <30;
-      currentPlattform.movingPlattformDir = RND <50 ? -1:1;
-      currentPlattform.isMovingPlattform = RND <20;
-      currentPlattform.hasEnemy = RND <30;
-      currentPlattform.position.x = random(0,63);
+      isBroken = RND <30;
+      movingPlattformDir = RND <50 ? -1:1;
+      isMovingPlattform = RND <20;
+      hasEnemy = RND <30;
+      position.x = random(0,63);
     }
 
     position.y --;
@@ -475,7 +476,7 @@ public:
     {
       Plattform p;
       p.id = i;
-      p.position.y = p.id*5; 
+      p.position.y = p.id*10; 
       plattformPool[i] = p;
     }
     currentPlattform = getFromPool();
