@@ -36,21 +36,24 @@ class v2
 public:
   int x;
   int y;
-  v2(int _x, int _y){
+  v2(int _x, int _y)
+  {
     x = _x;
     y = _y;
   }
-  float magnitude(){
-    return sqrt(x+y);
+  float magnitude()
+  {
+    return sqrt(x + y);
   }
-  v2 subtract(v2 a, v2 b){
-    return v2(a.x-b.x, a.y-b.y);
+  v2 subtract(v2 a, v2 b)
+  {
+    return v2(a.x - b.x, a.y - b.y);
   }
-  v2 add(v2 a, v2 b){
-    return v2(a.x+b.x, a.y+b.y);
+  v2 add(v2 a, v2 b)
+  {
+    return v2(a.x + b.x, a.y + b.y);
   }
 };
-
 
 static const unsigned char PROGMEM logo_bmp[] = {};
 const int MPU_ADDR = 0x68;                                 // I2C address of the MPU-6050. If AD0 pin is set to HIGH, the I2C address will be 0x69.
@@ -89,7 +92,7 @@ public:
   bool getKeyToggle = true;
   bool getKeyDown()
   {
-    
+
     if (getKeyToggle && buttonPressed)
     {
       getKeyToggle = false;
@@ -100,7 +103,6 @@ public:
       getKeyToggle = true;
       return false;
     }
-    
 
     return false;
   }
@@ -193,6 +195,7 @@ class Bullet
 {
 private:
   bool render = true;
+
 public:
   float bulletSize = 2;
   bool onInit = true;
@@ -204,219 +207,266 @@ public:
   int position = 0;
   int speed = 0;
   int translate = 0;
-   int cspeed = 6;
+  int cspeed = 6;
   bool fire = false;
 
-  float calculateInitPosY(){
-    return player.playerYPadding + player.snoutLength + player.snoutRadius+ player.legLength+ player.playerHeight+player.playerHeadpos-4;
+  float calculateInitPosY()
+  {
+    return player.playerYPadding + player.snoutLength + player.snoutRadius + player.legLength + player.playerHeight + player.playerHeadpos - 4;
   }
-  float calculateInitPosX(){
+  float calculateInitPosX()
+  {
     return ((player.playerX - (player.playerWidth / 2)) + 2);
   }
-  void _start() {
+  void _start()
+  {
     speed = cspeed;
     initPosX = calculateInitPosX();
-    initPosY =  calculateInitPosY();
+    initPosY = calculateInitPosY();
     bulletPosX = initPosX;
     bulletPosY = initPosY;
     translate = 0;
     fire = false;
     render = false;
   }
-  void reset(){
+  void reset()
+  {
     initPosX = calculateInitPosX();
-    initPosY =  calculateInitPosY();
-    bulletPosY= calculateInitPosY();
+    initPosY = calculateInitPosY();
+    bulletPosY = calculateInitPosY();
     bulletPosX = calculateInitPosX();
     render = false;
     fire = false;
   }
-  void hibernate(){
+  void hibernate()
+  {
     speed = 0;
     bulletPosX = 100;
     bulletPosY = 100;
   }
-  void renderBullet() {
+  void renderBullet()
+  {
     display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
-  display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
+    display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
   }
-  void _update() {
+  void _update()
+  {
     Serial.println("");
-    Serial.print("bullet_id: "); Serial.print(convert_int16_to_str(bullet_id)); Serial.print(" fire: "); Serial.print(fire);
+    Serial.print("bullet_id: ");
+    Serial.print(convert_int16_to_str(bullet_id));
+    Serial.print(" fire: ");
+    Serial.print(fire);
     Serial.println("");
-    if(!fire)
-      bulletPosX =((player.playerX - (player.playerWidth / 2)) + 2);
-    else{
-      translate+= speed;
-      bulletPosY = initPosY+translate;
+    if (!fire)
+      bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
+    else
+    {
+      translate += speed;
+      bulletPosY = initPosY + translate;
     }
-    if(fire){
+    if (fire)
+    {
       renderBullet();
     }
-    if(bulletPosY > 128){
+    if (bulletPosY > 128)
+    {
       _start();
     }
   }
 };
-class Enemy {
-  public:
-    Enemy(){};
-    int id = random();
-    v2 position{display.height()/2,40};
-    void _start(){
-      position.x += id;
-    }
-    void renderEnemy() {
-        display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
-        display.fillCircle(position.y, position.x-1, 2, SSD1306_INVERSE);
-        display.drawPixel(position.y, position.x-1, SSD1306_WHITE);
-        for(int i = 0; i < 5; i++){
-          display.drawLine(position.y+3, position.x-4+(i*2), position.y+7- (i == 0||i == 4 ? 1:0), position.x-4+(i*2),SSD1306_WHITE);
-        }
-        display.fillRect( position.y-6, position.x-4, 4, 10, SSD1306_WHITE);
-        for(int i = 0; i<2; i++){
-          display.drawLine(position.y-6, position.x-3+(i*7), position.y-9, position.x-3+(i*7),SSD1306_WHITE);
-          display.drawLine(position.y-9, position.x-3+(i*7), position.y-9, position.x-5+(i*7),SSD1306_WHITE);  
-        }
-        for (int i = 0; i<3; i++){
-          int yoffset = -4;
-          display.drawPixel(position.y+yoffset, position.x-2-1,SSD1306_INVERSE) ;
-          display.drawLine(position.y+yoffset, position.x+(i*2)-1, position.y-1+yoffset, position.x-1+(i*2)-1,SSD1306_INVERSE);
-        }
-    }
-    void _update(){
-      renderEnemy();
-        v2 temp{0,1};
-        v2 temp2{0,id};
-        //position.x+= 10* sin(delta);        
-    }
-};
-class EnemySpawner {
-  public:
-  int currentEnemyIndex = 0;
-  Enemy enemyPool [16];
-  Enemy currentEnemy;
-  Enemy getFromPool(){
-    if (currentEnemyIndex > 15)
-      {
-        currentEnemyIndex = 0;
-      }
-      return enemyPool[currentEnemyIndex++];
+class Enemy
+{
+public:
+  Enemy(){};
+  int id = random();
+  v2 position{display.height() / 2, 40};
+  void _start()
+  {
+    position.x += id;
   }
-  void _start() {
-      for (int i = 0; i < 16; i++)
-      {
-        Enemy e {};
-        e.id = i;
-        enemyPool[i] = e;
-        e._start();
-      }
-    }
-  void _update(){
-    for (int i = 0; i<16; i++)
+  void renderEnemy()
+  {
+    display.fillCircle(position.y, position.x, 5, SSD1306_WHITE);
+    display.fillCircle(position.y, position.x - 1, 2, SSD1306_INVERSE);
+    display.drawPixel(position.y, position.x - 1, SSD1306_WHITE);
+    for (int i = 0; i < 5; i++)
     {
-       Enemy _e=  enemyPool[i];
-       _e._update();
-       enemyPool[i]= _e;
+      display.drawLine(position.y + 3, position.x - 4 + (i * 2), position.y + 7 - (i == 0 || i == 4 ? 1 : 0), position.x - 4 + (i * 2), SSD1306_WHITE);
+    }
+    display.fillRect(position.y - 6, position.x - 4, 4, 10, SSD1306_WHITE);
+    for (int i = 0; i < 2; i++)
+    {
+      display.drawLine(position.y - 6, position.x - 3 + (i * 7), position.y - 9, position.x - 3 + (i * 7), SSD1306_WHITE);
+      display.drawLine(position.y - 9, position.x - 3 + (i * 7), position.y - 9, position.x - 5 + (i * 7), SSD1306_WHITE);
+    }
+    for (int i = 0; i < 3; i++)
+    {
+      int yoffset = -4;
+      display.drawPixel(position.y + yoffset, position.x - 2 - 1, SSD1306_INVERSE);
+      display.drawLine(position.y + yoffset, position.x + (i * 2) - 1, position.y - 1 + yoffset, position.x - 1 + (i * 2) - 1, SSD1306_INVERSE);
+    }
+  }
+  void _update()
+  {
+    renderEnemy();
+    v2 temp{0, 1};
+    v2 temp2{0, id};
+    //position.x+= 10* sin(delta);
+  }
+};
+class EnemySpawner
+{
+public:
+  int currentEnemyIndex = 0;
+  Enemy enemyPool[16];
+  Enemy currentEnemy;
+  Enemy getFromPool()
+  {
+    if (currentEnemyIndex > 15)
+    {
+      currentEnemyIndex = 0;
+    }
+    return enemyPool[currentEnemyIndex++];
+  }
+  void _start()
+  {
+    for (int i = 0; i < 16; i++)
+    {
+      Enemy e{};
+      e.id = i;
+      enemyPool[i] = e;
+      e._start();
+    }
+  }
+  void _update()
+  {
+    for (int i = 0; i < 16; i++)
+    {
+      Enemy _e = enemyPool[i];
+      _e._update();
+      enemyPool[i] = _e;
     }
   }
 };
 EnemySpawner enemySpawner;
 class BulletSpawner
 {
-  public:
-    int currentBulletIndex = 0;
-    Bullet bulletPool[16];
-    Bullet currentBullet;
-    Bullet getFromPool() {
-      if (currentBulletIndex > 15)
-      {
-        currentBulletIndex = 0;
-      }
-      return bulletPool[currentBulletIndex++];
+public:
+  int currentBulletIndex = 0;
+  Bullet bulletPool[16];
+  Bullet currentBullet;
+  Bullet getFromPool()
+  {
+    if (currentBulletIndex > 15)
+    {
+      currentBulletIndex = 0;
     }
-    void _start() {
-      for (int i = 0; i < 16; i++)
-      {
-        Bullet b;
-        b.bullet_id = i;
-        b._start();
-        bulletPool[i] = b;
-      }
+    return bulletPool[currentBulletIndex++];
+  }
+  void _start()
+  {
+    for (int i = 0; i < 16; i++)
+    {
+      Bullet b;
+      b.bullet_id = i;
+      b._start();
+      bulletPool[i] = b;
+    }
+    currentBullet = getFromPool();
+  }
+  void _update()
+  {
+    if (player.isAttacking)
+    {
       currentBullet = getFromPool();
+      currentBullet._start();
+      currentBullet.fire = true;
+      bulletPool[currentBulletIndex - 1] = currentBullet;
     }
-    void _update() {
-      if (player.isAttacking) {
-        currentBullet = getFromPool();
-        currentBullet._start();
-        currentBullet.fire = true;
-        bulletPool[currentBulletIndex-1]= currentBullet; 
-      }
-      for (int i = 0; i < 16; i++) {
-        bulletPool[i]._update();
-      }
+    for (int i = 0; i < 16; i++)
+    {
+      bulletPool[i]._update();
     }
+  }
 };
 BulletSpawner bulletSpawner;
 class Plattform
 {
 public:
-  v2 position{10,10};
+  v2 position{10, 10};
   bool isBroken = true;
   int id = random();
-  void _start(){
-
+  void _start()
+  {
   }
-  void renderBrokenPlattform(){
-    for (int i = 0; i<5; i++){
-          display.drawLine(position.y+20, position.x-4+(i*3), position.y-3+20, position.x-1+(i*3),SSD1306_WHITE);
-        }
+  void renderBrokenPlattform()
+  {
+    for (int i = 0; i < 5; i++)
+    {
+      display.drawLine(position.y + 20, position.x - 4 + (i * 3), position.y - 3 + 20, position.x - 1 + (i * 3), SSD1306_WHITE);
+    }
   }
-  void renderPlattform() {
-
+  void renderPlattform()
+  {
+    //display.drawLine(position.y + 20, position.x -4, position.y - 3 + 20, position.x - 1 + (4 * 3), SSD1306_WHITE);
+    for(int i = 0; i<5 ;i++){
+      
+    display.fillCircle(position.y + 18, position.x -2+(3*i), 2,SSD1306_WHITE);
+    }
+    display.fillCircle(position.y + 18, position.x - 1-3 + (4 * 3), 2,SSD1306_WHITE);
   }
-  void _update(){
-    if(!isBroken){
+  void _update()
+  {
+    if (!isBroken)
+    {
       renderPlattform();
-    } else{
-      renderPlattform();
+    }
+    else
+    {
+      renderBrokenPlattform();
     }
   }
 };
+Plattform plattform;
+Plattform plattform2;
 
 class PlattformSpawner
 {
-  public:
-    int currentPlattformIndex = 0;
-    Plattform plattformPool[16];
-    Plattform currentPlattform;
-    Plattform getFromPool() {
-      if (currentPlattformIndex > 15)
-      {
-        currentPlattformIndex = 0;
-      }
-      return plattformPool[currentPlattformIndex++];
+public:
+  int currentPlattformIndex = 0;
+  Plattform plattformPool[16];
+  Plattform currentPlattform;
+  Plattform getFromPool()
+  {
+    if (currentPlattformIndex > 15)
+    {
+      currentPlattformIndex = 0;
     }
-    void _start() {
-      for (int i = 0; i < 16; i++)
-      {
-        Plattform p;
-        p.id = i;
-        plattformPool[i] = p;
-      }
+    return plattformPool[currentPlattformIndex++];
+  }
+  void _start()
+  {
+    for (int i = 0; i < 16; i++)
+    {
+      Plattform p;
+      p.id = i;
+      plattformPool[i] = p;
+    }
+    currentPlattform = getFromPool();
+  }
+  void _update()
+  {
+    if (player.isAttacking)
+    {
       currentPlattform = getFromPool();
+      currentPlattform._start();
+      plattformPool[currentPlattformIndex - 1] = currentPlattform;
     }
-    void _update() {
-      if (player.isAttacking) {
-        currentPlattform = getFromPool();
-        currentPlattform._start();
-        plattformPool[currentPlattformIndex-1]= currentPlattform; 
-        
-      }
-      for (int i = 0; i < 16; i++) {
-        plattformPool[i]._update();
-      }
+    for (int i = 0; i < 16; i++)
+    {
+      plattformPool[i]._update();
     }
+  }
 };
 void START()
 {
@@ -424,13 +474,11 @@ void START()
   enemySpawner._start();
   for (int i = 0; i < 16; i++)
   {
-    Enemy enemies =enemySpawner.enemyPool[i];
-   int ids = enemies.id;
-   enemies.position.y = ids;
-   //Serial.println(convert_int16_to_str(ids));
-
+    Enemy enemies = enemySpawner.enemyPool[i];
+    int ids = enemies.id;
+    enemies.position.y = ids;
+    //Serial.println(convert_int16_to_str(ids));
   }
-  
 }
 
 void setup()
@@ -465,9 +513,15 @@ void UPDATE()
   player._update();
   bulletSpawner._update();
   enemySpawner._update();
+  plattform.isBroken = true;
+  plattform._update();
+  
+  plattform2.isBroken = false;
+  plattform2.position.y = 20;
+  plattform2._update();
   //bulletSpawner.currentBullet._update();
   delta++;
-  char str [20];
+  char str[20];
   sprintf(str, "          SCORE: %d", 9999);
   printStr(str, 1);
   //Test test;
