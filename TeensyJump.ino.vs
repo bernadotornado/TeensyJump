@@ -403,7 +403,7 @@ public:
   {
     for (int i = 0; i < 5; i++)
     {
-      display.drawLine(position.y , position.x - 4 + (i * 3), position.y - 3 , position.x - 1 + (i * 3), SSD1306_WHITE);
+      display.drawLine(position.y +2, position.x - 4 + (i * 3), position.y - 3 +2, position.x - 1 + (i * 3), SSD1306_WHITE);
     }
   }
   void renderPlattform()
@@ -412,7 +412,7 @@ public:
     for (int i = 0; i < 5; i++)
     {
 
-      display.fillCircle(position.y -2, position.x - 2 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
+      display.fillCircle(position.y , position.x - 5 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
     }
     //display.fillCircle(position.y -2, position.x - 1 - 4 + (4 * 3), 2, SSD1306_WHITE);
   }
@@ -426,7 +426,8 @@ public:
     {
       renderBrokenPlattform();
     }
-    display.drawPixel(position.y, position.x, SSD1306_WHITE);
+    display.drawPixel(position.y, position.x, SSD1306_INVERSE);
+    //display.drawPixel(position.y-1, position.x, SSD1306_INVERSE);
   }
 };
 Plattform plattform;
