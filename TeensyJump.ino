@@ -438,7 +438,7 @@ public:
       position.x = random(0,63);
     }
 
-    position.y --;
+    position.y -= 3*abs(sin(delta*3));
 
 
 
