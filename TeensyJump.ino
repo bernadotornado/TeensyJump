@@ -121,7 +121,6 @@ class Player
 public:
 
   v2 position {31,10};
-  float playerX = 31;
   const int playerWidth = 8;
   const int playerHeight = 5;
   const int playerHeadpos = 9;
@@ -143,43 +142,43 @@ public:
 
   void renderPlayer()
   {
-    display.fillRect(playerHeight + position.y, (playerX - (playerWidth / 2)) - 1, playerHeight, playerWidth, SSD1306_INVERSE);
+    display.fillRect(playerHeight + position.y, (position.x - (playerWidth / 2)) - 1, playerHeight, playerWidth, SSD1306_INVERSE);
     // Draw Head
-    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 4, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 3, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 2, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 1, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (position.x - (playerWidth / 2)) + 2, 4, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (position.x - (playerWidth / 2)) + 2, 3, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (position.x - (playerWidth / 2)) + 2, 2, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (position.x - (playerWidth / 2)) + 2, 1, SSD1306_WHITE);
     // Draw Legs
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg1Pos, position.y + legLength, (position.x - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg2Pos, position.y + legLength, (position.x - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg3Pos, position.y + legLength, (position.x - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
     // Draw feet
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos - footLength, SSD1306_WHITE);
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos - footLength, SSD1306_WHITE);
-    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg1Pos, position.y, (position.x - (playerWidth / 2)) + 2 + leg1Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg2Pos, position.y, (position.x - (playerWidth / 2)) + 2 + leg2Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (position.x - (playerWidth / 2)) + 2 + leg3Pos, position.y, (position.x - (playerWidth / 2)) + 2 + leg3Pos - footLength, SSD1306_WHITE);
     // Draw Snout
     if (isAttacking)
     {
-      display.drawLine(position.y + snoutPadding, (playerX - (playerWidth / 2)) + 2, position.y + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, SSD1306_WHITE);
-      display.drawCircle(position.y + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, snoutRadius, SSD1306_WHITE);
+      display.drawLine(position.y + snoutPadding, (position.x - (playerWidth / 2)) + 2, position.y + snoutPadding + snoutLength, (position.x - (playerWidth / 2)) + 2, SSD1306_WHITE);
+      display.drawCircle(position.y + snoutPadding + snoutLength, (position.x - (playerWidth / 2)) + 2, snoutRadius, SSD1306_WHITE);
     }
     else
     {
-      display.drawLine(position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX, position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, SSD1306_WHITE);
-      display.drawCircle(position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, snoutRadius, SSD1306_WHITE);
+      display.drawLine(position.y + snoutPosY, (position.x - (playerWidth / 2)) - snoutPosX, position.y + snoutPosY, (position.x - (playerWidth / 2)) - snoutPosX - snoutLength, SSD1306_WHITE);
+      display.drawCircle(position.y + snoutPosY, (position.x - (playerWidth / 2)) - snoutPosX - snoutLength, snoutRadius, SSD1306_WHITE);
     }
   }
 
   void playerMovement()
   {
-    playerX += (int16_t)(x);
-    if (playerX > display.height() + 1)
+    position.x += (int16_t)(x);
+    if (position.x > display.height() + 1)
     {
-      playerX = 0;
+      position.x = 0;
     }
-    if (playerX < 0)
+    if (position.x < 0)
     {
-      playerX = display.height() + 1;
+      position.x = display.height() + 1;
     }
 
     //player.position.y = bounce;
@@ -204,12 +203,11 @@ private:
 public:
   float bulletSize = 2;
   bool onInit = true;
-  float bulletPosX = 0;
-  float bulletPosY = 0;
+  v2 position {0,0};
+  v2 initPos{0, 128};
   float initPosX = 0; 
   float initPosY = 128;
   int bullet_id = random();
-  int position = 0;
   int speed = 0;
   int translate = 0;
   int cspeed = 6;
@@ -221,15 +219,15 @@ public:
   }
   float calculateInitPosX()
   {
-    return ((player.playerX - (player.playerWidth / 2)) + 2);
+    return ((player.position.x - (player.playerWidth / 2)) + 2);
   }
   void _start()
   {
     speed = cspeed;
-    initPosX = calculateInitPosX();
-    initPosY = calculateInitPosY();
-    bulletPosX = initPosX;
-    bulletPosY = initPosY;
+    initPos.x = calculateInitPosX();
+    initPos.y = calculateInitPosY();
+    position.x = initPos.x;
+    position.y = initPos.y;
     translate = 0;
     fire = false;
     render = false;
@@ -238,36 +236,36 @@ public:
   {
     initPosX = calculateInitPosX();
     initPosY = calculateInitPosY();
-    bulletPosY = calculateInitPosY();
-    bulletPosX = calculateInitPosX();
+    position.y = calculateInitPosY();
+    position.x = calculateInitPosX();
     render = false;
     fire = false;
   }
   void hibernate()
   {
     speed = 0;
-    bulletPosX = 100;
-    bulletPosY = 100;
+    position.x = 100;
+    position.y = 100;
   }
   void renderBullet()
   {
-    display.drawCircle(bulletPosY, bulletPosX, bulletSize, SSD1306_WHITE);
-    display.drawPixel(bulletPosY, bulletPosX, SSD1306_WHITE);
+    display.drawCircle(position.y, position.x, bulletSize, SSD1306_WHITE);
+    display.drawPixel(position.y, position.x, SSD1306_WHITE);
   }
   void _update()
   {
     if (!fire)
-      bulletPosX = ((player.playerX - (player.playerWidth / 2)) + 2);
+      position.x = ((player.position.x - (player.playerWidth / 2)) + 2);
     else
     {
       translate += speed;
-      bulletPosY = initPosY + translate;
+      position.y = initPos.y + translate;
     }
     if (fire)
     {
       renderBullet();
     }
-    if (bulletPosY > 128)
+    if (position.y > 128)
     {
       _start();
     }
