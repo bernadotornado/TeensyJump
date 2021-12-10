@@ -399,12 +399,11 @@ public:
   {
 
   }
-  void CheckIfPlayerAbove(){
+  bool CheckIfPlayerAbove(){
     if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
       if(player.position.y > position.y+3){
-        
         return true;
-        }
+      }
     }
     return false;
   }
@@ -412,6 +411,10 @@ public:
 
   void renderBrokenPlattform()
   {
+    if(playerAbove){
+      display.drawPixel(position.y, position.x,SSD1306_WHITE );
+      return;
+    }
     for (int i = 0; i < 5; i++)
     {
       display.drawLine(position.y +2, position.x - 4-3-1 + (i * 3), position.y - 3 +2, position.x - 1-1 -3+ (i * 3), SSD1306_WHITE);
@@ -502,7 +505,7 @@ public:
       
       _p.position.y -= 3*abs(sin(delta*3));
       _p._update();
-      plattformPool[i] = _p
+      plattformPool[i] = _p;
     }
   }
 };
