@@ -119,10 +119,11 @@ InputManager inputManager;
 class Player
 {
 public:
+
+  v2 position {31,10};
   float playerX = 31;
   const int playerWidth = 8;
   const int playerHeight = 5;
-  const int playerYPadding = 10;
   const int playerHeadpos = 9;
   const int leg1Pos = 4;
   const int leg2Pos = 1;
@@ -142,30 +143,30 @@ public:
 
   void renderPlayer()
   {
-    display.fillRect(playerHeight + playerYPadding, (playerX - (playerWidth / 2)) - 1, playerHeight, playerWidth, SSD1306_INVERSE);
+    display.fillRect(playerHeight + position.y, (playerX - (playerWidth / 2)) - 1, playerHeight, playerWidth, SSD1306_INVERSE);
     // Draw Head
-    display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 4, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 3, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 2, SSD1306_WHITE);
-    display.drawCircle(playerHeadpos + playerYPadding, (playerX - (playerWidth / 2)) + 2, 1, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 4, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 3, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 2, SSD1306_WHITE);
+    display.drawCircle(playerHeadpos + position.y, (playerX - (playerWidth / 2)) + 2, 1, SSD1306_WHITE);
     // Draw Legs
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg3Pos, playerYPadding + legLength, (playerX - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg1Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg2Pos, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos, position.y + legLength, (playerX - (playerWidth / 2)) + 2 + leg3Pos, SSD1306_WHITE);
     // Draw feet
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos, playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg1Pos - footLength, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos, playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg2Pos - footLength, SSD1306_WHITE);
-    display.drawLine(playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg3Pos, playerYPadding, (playerX - (playerWidth / 2)) + 2 + leg3Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg1Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg2Pos - footLength, SSD1306_WHITE);
+    display.drawLine(position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos, position.y, (playerX - (playerWidth / 2)) + 2 + leg3Pos - footLength, SSD1306_WHITE);
     // Draw Snout
     if (isAttacking)
     {
-      display.drawLine(playerYPadding + snoutPadding, (playerX - (playerWidth / 2)) + 2, playerYPadding + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, SSD1306_WHITE);
-      display.drawCircle(playerYPadding + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, snoutRadius, SSD1306_WHITE);
+      display.drawLine(position.y + snoutPadding, (playerX - (playerWidth / 2)) + 2, position.y + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, SSD1306_WHITE);
+      display.drawCircle(position.y + snoutPadding + snoutLength, (playerX - (playerWidth / 2)) + 2, snoutRadius, SSD1306_WHITE);
     }
     else
     {
-      display.drawLine(playerYPadding + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX, playerYPadding + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, SSD1306_WHITE);
-      display.drawCircle(playerYPadding + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, snoutRadius, SSD1306_WHITE);
+      display.drawLine(position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX, position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, SSD1306_WHITE);
+      display.drawCircle(position.y + snoutPosY, (playerX - (playerWidth / 2)) - snoutPosX - snoutLength, snoutRadius, SSD1306_WHITE);
     }
   }
 
@@ -181,7 +182,7 @@ public:
       playerX = display.height() + 1;
     }
 
-    //playerYPadding = bounce;
+    //player.position.y = bounce;
   }
   void handleInput()
   {
@@ -216,7 +217,7 @@ public:
 
   float calculateInitPosY()
   {
-    return player.playerYPadding + player.snoutLength + player.snoutRadius + player.legLength + player.playerHeight + player.playerHeadpos - 4;
+    return player.position.y + player.snoutLength + player.snoutRadius + player.legLength + player.playerHeight + player.playerHeadpos - 4;
   }
   float calculateInitPosX()
   {
