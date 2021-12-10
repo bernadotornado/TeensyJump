@@ -438,7 +438,6 @@ public:
       position.x = random(0,63);
     }
 
-    position.y -= 3*abs(sin(delta*3));
 
 
 
@@ -495,7 +494,11 @@ public:
     
     for (int i = 0; i < 16; i++)
     {
-      plattformPool[i]._update();
+      Plattform _p = plattformPool[i];
+      
+      _p.position.y -= 3*abs(sin(delta*3));
+      _p._update();
+      plattformPool[i] = _p;
     }
   }
 };

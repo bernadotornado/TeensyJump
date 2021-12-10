@@ -391,12 +391,25 @@ public:
   bool isBroken = false;
   bool isMovingPlattform = false;
   bool hasEnemy = false;
+  bool playerAbove = false;
   int movingPlattformDir = 1;
   
   int id = random();
   void _start()
   {
+
   }
+  void CheckIfPlayerAbove(){
+    if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
+      if(player.position.y > position.y+3){
+        
+        return true;
+        }
+    }
+    return false;
+  }
+
+
   void renderBrokenPlattform()
   {
     for (int i = 0; i < 5; i++)
@@ -406,15 +419,6 @@ public:
   }
   void renderPlattform()
   {
-    if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
-      if(player.position.y > position.y+3){
-        
-        display.drawPixel(position.y, position.x,SSD1306_WHITE );
-        return;
-        }
-    }
-
-
 
     for (int i = 0; i < 5; i++)
     {
@@ -424,7 +428,7 @@ public:
   void _update()
   {
 
-
+    playerAbove = CheckIfPlayerAbove();
     if (position.y < 0)
     {
       position.y = 128;
@@ -438,7 +442,6 @@ public:
       position.x = random(0,63);
     }
 
-    position.y -= 3*abs(sin(delta*3));
 
 
 
@@ -495,7 +498,11 @@ public:
     
     for (int i = 0; i < 16; i++)
     {
-      plattformPool[i]._update();
+      Plattform _p = plattformPool[i];
+      
+      _p.position.y -= 3*abs(sin(delta*3));
+      _p._update();
+      plattformPool[i] = _p
     }
   }
 };
