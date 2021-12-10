@@ -406,6 +406,16 @@ public:
   }
   void renderPlattform()
   {
+    if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
+      if(player.position.y > position.y+3){
+        
+        display.drawPixel(position.y, position.x,SSD1306_WHITE );
+        return;
+        }
+    }
+
+
+
     for (int i = 0; i < 5; i++)
     {
       display.fillCircle(position.y , position.x - 5-1 + (3 * i) - (i==4?1:0), 2, SSD1306_WHITE);
