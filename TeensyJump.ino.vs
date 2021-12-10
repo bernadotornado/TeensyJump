@@ -485,6 +485,7 @@ public:
     }
     return plattformPool[currentPlattformIndex++];
   }
+  
   void _start()
   {
     for (int i = 0; i < 16; i++)
@@ -498,13 +499,12 @@ public:
   }
   void _update()
   {
-    
     for (int i = 0; i < 16; i++)
     {
       Plattform _p = plattformPool[i];
-      
       _p.position.y -= 3*abs(sin(delta*3));
       _p._update();
+      
       plattformPool[i] = _p;
     }
   }
