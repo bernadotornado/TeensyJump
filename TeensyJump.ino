@@ -18,6 +18,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 #define LOGO_HEIGHT 16
 #define LOGO_WIDTH 16
 
+
 char tmp_str[20]; // temporary variable used in convert function
 
 char *convert_int16_to_str(int16_t i)
@@ -74,7 +75,7 @@ class GameState
 {
 public:
   bool gameOver = false;
-
+  int score = 0;
   void Restart()
   {
   }
@@ -120,7 +121,7 @@ class Player
 {
 public:
 
-  v2 position {31,10};
+  v2 position {31,20};
   const int playerWidth = 8;
   const int playerHeight = 5;
   const int playerHeadpos = 9;
@@ -432,7 +433,7 @@ public:
   {
 
     playerAbove = CheckIfPlayerAbove();
-    if (position.y < 0)
+    if (position.y < -50)
     {
       position.y = 128;
       //rnd = random(0,99);
@@ -473,6 +474,7 @@ public:
 class PlattformSpawner
 {
 public:
+  float bounceDelta = 0;
   int currentPlattformIndex = 0;
   Plattform plattformPool[16];
   Plattform currentPlattform;
@@ -485,6 +487,7 @@ public:
     }
     return plattformPool[currentPlattformIndex++];
   }
+  
   void _start()
   {
     for (int i = 0; i < 16; i++)
@@ -498,15 +501,34 @@ public:
   }
   void _update()
   {
+#define BOUNCE_RESET 3.14159265f / 3
+
+    bounceDelta++;
+    bool bobby = true;
+    for (int i = 0; i < 16; i++)
+    {
+      bobby = bobby && plattformPool[i].playerAbove;
+      if(!bobby){
+        break;
+      }
+    }
     
     for (int i = 0; i < 16; i++)
     {
       Plattform _p = plattformPool[i];
+      // if(bounceDelta> BOUNCE_RESET){
+      //   bounceDelta = 0;
+      // }
       
-      _p.position.y -= 3*abs(sin(delta*3));
+      if(inputManager.buttonPressed)
+        _p.position.y -= 3*abs(sin(bounceDelta*3));
+      else
+        _p.position.y += 3;
       _p._update();
+      
       plattformPool[i] = _p;
     }
+    gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
   }
 };
 PlattformSpawner plattformSpawner;
@@ -564,17 +586,8 @@ void UPDATE()
   enemySpawner._update();
   plattformSpawner._update();
   delta++;
-
-  bounceDelta+= 0.1f;
- // bounce = bounce*bounceInvert;
-  bounce = calcBounce(bounceDelta);
-  if(bounceDelta> calcRoot){
-    bounce = 0;
-    bounceDelta = 0;
-    bounceInvert  = bounceInvert *-1;
-  }
   char str[20];
-  sprintf(str, "          SCORE: %d", bounce);
+  sprintf(str, "          SCORE: %d", gameState.score);
   printStr(str, 1);
 }
 void loop()
