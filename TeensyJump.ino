@@ -409,7 +409,17 @@ public:
     return false;
   }
 
-
+  void Randomize(){
+    
+      //rnd = random(0,99);
+      
+#define RND random(0,99)
+      isBroken = RND <30;
+      movingPlattformDir = RND <50 ? -1:1;
+      isMovingPlattform = RND <20;
+      hasEnemy = RND <30;
+      position.x = random(0,63);
+  }
   void renderBrokenPlattform()
   {
     if(playerAbove){
@@ -436,14 +446,7 @@ public:
     if (position.y < -50)
     {
       position.y = 128;
-      //rnd = random(0,99);
-      
-#define RND random(0,99)
-      isBroken = RND <30;
-      movingPlattformDir = RND <50 ? -1:1;
-      isMovingPlattform = RND <20;
-      hasEnemy = RND <30;
-      position.x = random(0,63);
+      Randomize();
     }
 
 
@@ -495,10 +498,15 @@ public:
       Plattform p;
       p.id = i;
       p.position.y = p.id*10; 
+      p.Randomize();
       plattformPool[i] = p;
     }
     currentPlattform = getFromPool();
   }
+  float calculateBounce(float _delta){
+    return 4*abs(sin(_delta*3));
+  }
+
   void _update()
   {
 #define BOUNCE_RESET 3.14159265f / 3
@@ -521,9 +529,10 @@ public:
       // }
       
       if(inputManager.buttonPressed)
-        _p.position.y -= 3*abs(sin(bounceDelta*3));
-      else
+        _p.position.y -=(int) (calculateBounce(bounceDelta));
+      else if(_p.position.y < 255+_p.id*10)
         _p.position.y += 3;
+
       _p._update();
       
       plattformPool[i] = _p;
