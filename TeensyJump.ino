@@ -504,14 +504,18 @@ public:
     currentPlattform = getFromPool();
   }
   float calculateBounce(float _delta){
-    return 4*abs(sin(_delta*3));
+    //return 4*abs(sin(_delta*3));
+    float pi =  3.14159265f;
+
+    return (((12*_delta)/pi)-(36*_delta*_delta))/(pi*pi);
   }
+
 
   void _update()
   {
 #define BOUNCE_RESET 3.14159265f / 3
 
-    bounceDelta++;
+    bounceDelta+= 0.01f;
     bool bobby = true;
     for (int i = 0; i < 16; i++)
     {
@@ -528,8 +532,17 @@ public:
       //   bounceDelta = 0;
       // }
       
-      if(inputManager.buttonPressed)
-        _p.position.y -=(int) (calculateBounce(bounceDelta));
+      if(!inputManager.buttonPressed){
+        float res = calculateBounce(bounceDelta);
+          if(res < 0){
+            bounceDelta = 0;
+            display.drawPixel(10,10, SSD1306_WHITE);
+            //delay(500);
+            res = calculateBounce(bounceDelta);
+          }
+          _p.position.y -= 100*res;
+         gameState.score = res;
+        }
       else if(_p.position.y < 255+_p.id*10)
         _p.position.y += 3;
 
@@ -537,7 +550,7 @@ public:
       
       plattformPool[i] = _p;
     }
-    gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
+    //gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
   }
 };
 PlattformSpawner plattformSpawner;
