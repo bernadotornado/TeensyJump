@@ -401,7 +401,7 @@ public:
 
   }
   bool CheckIfPlayerAbove(){
-    if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
+    if((position.x-11) < player.position.x  &&   player.position.x<(position.x+14 )){
       if(player.position.y > position.y+3 && player.position.y < position.y+6){
         return true;
       }
