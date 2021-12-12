@@ -506,8 +506,14 @@ public:
   float calculateBounce(float _delta){
     //return 4*abs(sin(_delta*3));
     float pi =  3.14159265f;
-
-    return (((12*_delta)/pi)-(36*_delta*_delta))/(pi*pi);
+    float _delay= 0.05f;
+    float __x = _delta -_delay;
+    if(_delta>= _delay) {
+      return (((6*__x)/pi)-(9*__x*__x))/(pi*pi);
+    }
+    else {
+      return 0;
+    }
   }
 
 
@@ -524,28 +530,23 @@ public:
         break;
       }
     }
-    
+
+    float res = calculateBounce(bounceDelta);
+
+    if(res < 0) {
+      bounceDelta = 0;
+      res = calculateBounce(bounceDelta);
+    }
+
     for (int i = 0; i < 16; i++)
     {
       Plattform _p = plattformPool[i];
-      // if(bounceDelta> BOUNCE_RESET){
-      //   bounceDelta = 0;
-      // }
-      
       if(!inputManager.buttonPressed){
-        float res = calculateBounce(bounceDelta);
-          if(res < 0){
-            bounceDelta = 0;
-            display.drawPixel(10,10, SSD1306_WHITE);
-            //delay(500);
-            res = calculateBounce(bounceDelta);
-          }
-          _p.position.y -= 100*res;
+          _p.position.y -=400*res;
          gameState.score = res;
         }
       else if(_p.position.y < 255+_p.id*10)
         _p.position.y += 3;
-
       _p._update();
       
       plattformPool[i] = _p;
