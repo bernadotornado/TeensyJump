@@ -402,7 +402,7 @@ public:
   }
   bool CheckIfPlayerAbove(){
     if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
-      if(player.position.y > position.y+3 && player.position.y < position.y+13){
+      if(player.position.y > position.y+3 && player.position.y < position.y+6){
         return true;
       }
     }
@@ -516,6 +516,7 @@ public:
     }
   }
 
+bool shouldBounce = true;
 
   void _update()
   {
@@ -526,13 +527,22 @@ public:
     for (int i = 0; i < 16; i++)
     {
       isAboveAnyPlatform = isAboveAnyPlatform || platformPool[i].playerAbove;
+      
     }
 
     float res = calculateBounce(bounceDelta);
 
     if(res < 0) {
-      bounceDelta = 0;
-      res = calculateBounce(bounceDelta);
+      if(isAboveAnyPlatform){
+        bounceDelta = 0;
+        res = calculateBounce(bounceDelta);
+        shouldBounce = true;
+      }
+      else {
+        shouldBounce = false;
+      }
+      
+
     }
 
     for (int i = 0; i < 16; i++)
