@@ -504,8 +504,12 @@ public:
     currentPlattform = getFromPool();
   }
   float calculateBounce(float _delta){
-    return 4*abs(sin(_delta*3));
+    //return 4*abs(sin(_delta*3));
+    float pi =  3.14159265f
+
+    return ((48*_delta)/pi)-(144*_delta*_delta)/pi*pi);
   }
+
 
   void _update()
   {
