@@ -385,15 +385,15 @@ public:
   }
 };
 BulletSpawner bulletSpawner;
-class Plattform
+class Platform
 {
 public:
   v2 position{10, 10};
   bool isBroken = false;
-  bool isMovingPlattform = false;
+  bool isMovingPlatform = false;
   bool hasEnemy = false;
   bool playerAbove = false;
-  int movingPlattformDir = 1;
+  int movingPlatformDir = 1;
   
   int id = random();
   void _start()
@@ -402,7 +402,7 @@ public:
   }
   bool CheckIfPlayerAbove(){
     if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
-      if(player.position.y > position.y+3){
+      if(player.position.y > position.y+3 && player.position.y < position.y+13){
         return true;
       }
     }
@@ -415,12 +415,12 @@ public:
       
 #define RND random(0,99)
       isBroken = RND <30;
-      movingPlattformDir = RND <50 ? -1:1;
-      isMovingPlattform = RND <20;
+      movingPlatformDir = RND <50 ? -1:1;
+      isMovingPlatform = RND <20;
       hasEnemy = RND <30;
       position.x = random(0,63);
   }
-  void renderBrokenPlattform()
+  void renderBrokenPlatform()
   {
     if(playerAbove){
       display.drawPixel(position.y, position.x,SSD1306_WHITE );
@@ -431,7 +431,7 @@ public:
       display.drawLine(position.y +2, position.x - 4-3-1 + (i * 3), position.y - 3 +2, position.x - 1-1 -3+ (i * 3), SSD1306_WHITE);
     }
   }
-  void renderPlattform()
+  void renderPlatform()
   {
 
     for (int i = 0; i < 5; i++)
@@ -453,60 +453,60 @@ public:
 
 
 
-    if(isMovingPlattform){
-      position.x+= movingPlattformDir;
+    if(isMovingPlatform){
+      position.x+= movingPlatformDir;
       if (position.x > 63){
-        movingPlattformDir =  movingPlattformDir *-1;
+        movingPlatformDir =  movingPlatformDir *-1;
       }
       if(position.x<0){
-         movingPlattformDir =  movingPlattformDir *-1;
+         movingPlatformDir =  movingPlatformDir *-1;
       }
     }
    // position.y = bounce;
     if (!isBroken)
     {
-      renderPlattform();
+      renderPlatform();
     }
     else
     {
-      renderBrokenPlattform();
+      renderBrokenPlatform();
     }
   }
 };
 
-class PlattformSpawner
+class PlatformSpawner
 {
 public:
   float bounceDelta = 0;
-  int currentPlattformIndex = 0;
-  Plattform plattformPool[16];
-  Plattform currentPlattform;
+  int currentPlatformIndex = 0;
+  Platform platformPool[16];
+  Platform currentPlatform;
   int rnd = 0;
-  Plattform getFromPool()
+  Platform getFromPool()
   {
-    if (currentPlattformIndex > 15)
+    if (currentPlatformIndex > 15)
     {
-      currentPlattformIndex = 0;
+      currentPlatformIndex = 0;
     }
-    return plattformPool[currentPlattformIndex++];
+    return platformPool[currentPlatformIndex++];
   }
   
   void _start()
   {
     for (int i = 0; i < 16; i++)
     {
-      Plattform p;
+      Platform p;
       p.id = i;
       p.position.y = p.id*10; 
       p.Randomize();
-      plattformPool[i] = p;
+      platformPool[i] = p;
     }
-    currentPlattform = getFromPool();
+    currentPlatform = getFromPool();
   }
   float calculateBounce(float _delta){
     //return 4*abs(sin(_delta*3));
     float pi =  3.14159265f;
-    float _delay= 0.05f;
+    float _delay= 0;//0.05f;
     float __x = _delta -_delay;
     if(_delta>= _delay) {
       return (((6*__x)/pi)-(9*__x*__x))/(pi*pi);
@@ -522,13 +522,10 @@ public:
 #define BOUNCE_RESET 3.14159265f / 3
 
     bounceDelta+= 0.01f;
-    bool bobby = true;
+    bool isAboveAnyPlatform = false;
     for (int i = 0; i < 16; i++)
     {
-      bobby = bobby && plattformPool[i].playerAbove;
-      if(!bobby){
-        break;
-      }
+      isAboveAnyPlatform = isAboveAnyPlatform || platformPool[i].playerAbove;
     }
 
     float res = calculateBounce(bounceDelta);
@@ -540,27 +537,27 @@ public:
 
     for (int i = 0; i < 16; i++)
     {
-      Plattform _p = plattformPool[i];
-      if(!inputManager.buttonPressed){
+      Platform _p = platformPool[i];
+      if(isAboveAnyPlatform){
           _p.position.y -=400*res;
          gameState.score = res;
         }
-      else if(_p.position.y < 255+_p.id*10)
-        _p.position.y += 3;
+       else if((_p.position.y < 255+_p.id*10)&& delta>200)
+         _p.position.y += 3;
       _p._update();
       
-      plattformPool[i] = _p;
+      platformPool[i] = _p;
     }
     //gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
   }
 };
-PlattformSpawner plattformSpawner;
+PlatformSpawner platformSpawner;
 
 void START()
 {
   bulletSpawner._start();
   enemySpawner._start();
-  plattformSpawner._start();
+  platformSpawner._start();
   for (int i = 0; i < 16; i++)
   {
     Enemy enemies = enemySpawner.enemyPool[i];
@@ -607,7 +604,7 @@ void UPDATE()
   player._update();
   bulletSpawner._update();
   enemySpawner._update();
-  plattformSpawner._update();
+  platformSpawner._update();
   delta++;
   char str[20];
   sprintf(str, "          SCORE: %d", gameState.score);
