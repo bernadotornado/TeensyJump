@@ -77,6 +77,7 @@
   public:
     bool gameOver = false;
     int score = 0;
+    int highscore = 0;
     int gameOverCounter;
     void Restart()
     {
@@ -87,11 +88,17 @@
       if (gameOverCounter>50){
         gameOver = false;
         gameOverCounter = 0;
+        
+         score = 0;
          return;
       }
       display.clearDisplay();
       printStr("Game Over", 2);
-
+      display.setTextSize(1.5f);
+      display.print("Score: ");
+      display.print(convert_int16_to_str(score));
+      display.println("");
+      display.print("High-Score: ");
       display.println(convert_int16_to_str(score));
       display.display();
     }
@@ -463,6 +470,7 @@
       playerAbove = CheckIfPlayerAbove();
       if (position.y < -50)
       {
+        gameState.score += 10;
         position.y = 128;
         Randomize();
       }
@@ -578,24 +586,16 @@
       for (int i = 0; i < 16; i++) {
         Platform _p = platformPool[i];
         if(shouldBounce){
-          gameState.score += 50;
           if(_p.isBroken && _p.playerAbove){ 
             _p.position.y = -512;
           }
-          if(_p.shouldReset){
-            
-          }
-            _p.position.y -=400*res;
-          gameState.score = res;
-          }
+          _p.position.y -=400*res;
+        }
         else if((_p.position.y < 255+_p.id*10))
           _p.position.y += shouldBounce ? 0:3;
-
-
         _p._update();
         platformPool[i] = _p;
       }
-      //gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
     }
   };
   PlatformSpawner platformSpawner;
@@ -677,6 +677,9 @@
     // Get Gyro y
     x = gyro_y;
     x = map(x, -32768, 32768, -50, 51);
+    if(gameState.score> gameState.highscore){
+        gameState.highscore = gameState.score;
+    }
     display.clearDisplay();
     if (gameState.gameOver)
     {
