@@ -99,7 +99,7 @@
       display.print(convert_int16_to_str(score));
       display.println("");
       display.print("High-Score: ");
-      display.println(convert_int16_to_str(score));
+      display.println(convert_int16_to_str(highscore));
       display.display();
     }
   };
@@ -662,6 +662,8 @@
 
   void loop()
   {
+    Serial.print(" Score: "); Serial.print(convert_int16_to_str(gameState.score));Serial.println("");
+    Serial.print(" HighScore: "); Serial.print(convert_int16_to_str(gameState.highscore));Serial.println("");
     //gyro setup
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(0x3B);                                 // starting with register 0x3B (ACCEL_XOUT_H) [MPU-6000 and MPU-6050 Register Map and Descriptions Revision 4.2, p.40]
@@ -676,11 +678,12 @@
     gyro_z = Wire.read() << 8 | Wire.read();          // reading registers: 0x47 (GYRO_ZOUT_H) and 0x48 (GYRO_ZOUT_L)
     // Get Gyro y
     x = gyro_y;
-    x = map(x, -32768, 32768, -50, 51);
-    if(gameState.score> gameState.highscore){
+    x = map(x, -32768, 32768, -50, 51); 
+    
+    display.clearDisplay();
+    if(gameState.score > gameState.highscore){
         gameState.highscore = gameState.score;
     }
-    display.clearDisplay();
     if (gameState.gameOver)
     {
       platformSpawner._start();
@@ -688,6 +691,7 @@
       gameState.GameOver();
       return;
     }
+    
     UPDATE();
     display.display();
     delay(25);
