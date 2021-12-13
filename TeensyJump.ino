@@ -612,7 +612,7 @@
             // Serial.print("Dist Y: ");Serial.print(convert_int16_to_str( dist.y*1000)); Serial.println("");
             if(mag<11)
             {
-              gameState.score += 50;
+              gameState.score += 1;
               Enemy _e = enemySpawner.enemyPool[i];
               _e.platformIndex = random(0,15);   
               enemySpawner.enemyPool[i] = _e;
