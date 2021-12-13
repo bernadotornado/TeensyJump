@@ -490,7 +490,7 @@
     int platformIndex = 0;
     void _start()
     {
-       int platformIndex = random(0,15);
+        platformIndex = random(0,15);
     }
     void renderEnemy()
     {
@@ -529,11 +529,11 @@
   {
   public:
     int currentEnemyIndex = 0;
-    Enemy enemyPool[16];
+    Enemy enemyPool[1];
     Enemy currentEnemy;
     Enemy getFromPool()
     {
-      if (currentEnemyIndex > 15)
+      if (currentEnemyIndex > 0)
       {
         currentEnemyIndex = 0;
       }
@@ -541,17 +541,18 @@
     }
     void _start()
     {
-      for (int i = 0; i < 16; i++)
+      for (int i = 0; i < 1; i++)
       {
         Enemy e{};
         e.id = i;
-        enemyPool[i] = e;
         e._start();
+        enemyPool[i] = e;
+        
       }
     }
     void _update()
     {
-      for (int i = 0; i < 16; i++)
+      for (int i = 0; i < 1; i++)
       {
         Enemy _e = enemyPool[i];
         _e._update();
@@ -598,20 +599,23 @@
       for (int i = 0; i < 16; i++)
       {
         
-        for (int j = 0; j < 16; j++)
+        for (int j = 0; j < 1; j++)
         { 
-            if(!player.isAttacking){
-              break;
-            }
+            // if(!player.isAttacking){
+            //   break;
+            // }
               
             v2 dist = v2::subtract(enemySpawner.enemyPool[j].position, bulletPool[i].position);
             float mag = dist.magnitude();
-            Serial.print("Magnitude: ");Serial.print(convert_int16_to_str( mag)); Serial.println("");
+            //Serial.print("Magnitude: ");Serial.print(convert_int16_to_str( mag)); Serial.println("");
             // Serial.print("Dist X: ");Serial.print(convert_int16_to_str( dist.x*1000)); Serial.println("");
             // Serial.print("Dist Y: ");Serial.print(convert_int16_to_str( dist.y*1000)); Serial.println("");
             if(mag<11)
             {
-              enemySpawner.enemyPool[i].position.y = 50;
+              Serial.println("Beinis mena");
+              Enemy _e = enemySpawner.enemyPool[i];
+              _e.platformIndex = random(0,15);   
+              enemySpawner.enemyPool[i] = _e;
               Bullet _b = bulletPool[i];
               _b._start();
               bulletPool[i] =_b;              
