@@ -46,7 +46,7 @@
     }
     float magnitude()
     {
-      return sqrt(x + y);
+      return sqrt(x*x + y*y);
     }
     static v2 subtract(v2 a, v2 b)
     {
@@ -272,8 +272,9 @@
     }
     void _update()
     {
-      if (!fire)
+      if (!fire){
         position.x = ((player.position.x - (player.playerWidth / 2)) + 2);
+        position.y= -255;}
       else
       {
         translate += speed;
@@ -398,14 +399,24 @@
       }
       for (int i = 0; i < 16; i++)
       {
+        
         for (int j = 0; j < 16; j++)
-        {
+        { 
+            if(!player.isAttacking){
+              break;
+            }
+              
             v2 dist = v2::subtract(enemySpawner.enemyPool[j].position, bulletPool[i].position);
             float mag = dist.magnitude();
-            if(mag<3)
+            Serial.print("Magnitude: ");Serial.print(convert_int16_to_str( mag)); Serial.println("");
+            // Serial.print("Dist X: ");Serial.print(convert_int16_to_str( dist.x*1000)); Serial.println("");
+            // Serial.print("Dist Y: ");Serial.print(convert_int16_to_str( dist.y*1000)); Serial.println("");
+            if(mag<4)
             {
-              enemySpawner.enemyPool[i].position.y = 300;
-              Serial.print("asdfasdf");
+              enemySpawner.enemyPool[i].position.y = 50;
+              Bullet _b = bulletPool[i];
+              _b._start();
+              bulletPool[i] =_b;              
             }
             
         }
@@ -675,8 +686,8 @@
 
   void loop()
   {
-    Serial.print(" Score: "); Serial.print(convert_int16_to_str(gameState.score));Serial.println("");
-    Serial.print(" HighScore: "); Serial.print(convert_int16_to_str(gameState.highscore));Serial.println("");
+    // Serial.print(" Score: "); Serial.print(convert_int16_to_str(gameState.score));Serial.println("");
+    // Serial.print(" HighScore: "); Serial.print(convert_int16_to_str(gameState.highscore));Serial.println("");
     //gyro setup
     Wire.beginTransmission(MPU_ADDR);
     Wire.write(0x3B);                                 // starting with register 0x3B (ACCEL_XOUT_H) [MPU-6000 and MPU-6050 Register Map and Descriptions Revision 4.2, p.40]
