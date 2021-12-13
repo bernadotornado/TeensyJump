@@ -393,6 +393,8 @@ public:
   bool isMovingPlatform = false;
   bool hasEnemy = false;
   bool playerAbove = false;
+  bool isUsed = false;
+  bool shouldReset = false;
   int movingPlatformDir = 1;
   
   int id = random();
@@ -400,19 +402,17 @@ public:
   {
 
   }
-  bool CheckIfPlayerAbove(){
-    if((position.x-8) < player.position.x  &&   player.position.x<(position.x+12 )){
-      if(player.position.y > position.y+3 && player.position.y < position.y+6){
+  bool CheckIfPlayerAbove() {
+    if((position.x-11) < player.position.x  &&   player.position.x<(position.x+14 )) {
+      if(player.position.y > position.y+3 && player.position.y < position.y+6) {
         return true;
       }
     }
     return false;
   }
 
-  void Randomize(){
-    
-      //rnd = random(0,99);
-      
+  void Randomize() {
+     
 #define RND random(0,99)
       isBroken = RND <30;
       movingPlatformDir = RND <50 ? -1:1;
@@ -448,7 +448,10 @@ public:
       position.y = 128;
       Randomize();
     }
-
+  	
+    if(isUsed && !playerAbove){
+     // shouldReset = true;
+    }
 
 
 
@@ -524,10 +527,10 @@ bool shouldBounce = true;
 
     bounceDelta+= 0.01f;
     bool isAboveAnyPlatform = false;
-    for (int i = 0; i < 16; i++)
-    {
-      isAboveAnyPlatform = isAboveAnyPlatform || platformPool[i].playerAbove;
-      
+    for (int i = 0; i < 16; i++) {
+      Platform _p = platformPool[i];
+      isAboveAnyPlatform = isAboveAnyPlatform || _p.playerAbove;
+      platformPool[i] = _p;
     }
 
     float res = calculateBounce(bounceDelta);
@@ -541,21 +544,26 @@ bool shouldBounce = true;
       else {
         shouldBounce = false;
       }
-      
-
     }
 
-    for (int i = 0; i < 16; i++)
-    {
+    for (int i = 0; i < 16; i++) {
       Platform _p = platformPool[i];
       if(shouldBounce){
+        
+        if(_p.isBroken && _p.playerAbove){ 
+          _p.position.y = -512;
+        }
+        if(_p.shouldReset){
+          
+        }
           _p.position.y -=400*res;
          gameState.score = res;
         }
        else if((_p.position.y < 255+_p.id*10))
          _p.position.y += shouldBounce ? 0:3;
+
+
       _p._update();
-      
       platformPool[i] = _p;
     }
     //gameState.score +=  (int16_t)( 3*abs(sin(bounceDelta*3))) == 0? 10: 0;
