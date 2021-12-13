@@ -48,11 +48,11 @@
     {
       return sqrt(x + y);
     }
-    v2 subtract(v2 a, v2 b)
+    static v2 subtract(v2 a, v2 b)
     {
       return v2(a.x - b.x, a.y - b.y);
     }
-    v2 add(v2 a, v2 b)
+    static v2 add(v2 a, v2 b)
     {
       return v2(a.x + b.x, a.y + b.y);
     }
@@ -99,7 +99,7 @@
       display.print(convert_int16_to_str(score));
       display.println("");
       display.print("High-Score: ");
-      display.println(convert_int16_to_str(score));
+      display.println(convert_int16_to_str(highscore));
       display.display();
     }
   };
@@ -398,6 +398,19 @@
       }
       for (int i = 0; i < 16; i++)
       {
+        for (int j = 0; j < 16; j++)
+        {
+            v2 dist = v2.subtract(enemySpawner.enemyPool[j].position, bulletPool[i].position);
+            float mag = dist.magnitude;
+            if(dist<3)
+            {
+              enemySpawner.enemyPool[i].position.y = 300;
+              Serial.print("asdfasdf");
+            }
+            
+        }
+        
+
         bulletPool[i]._update();
       }
     }
